@@ -1,14 +1,17 @@
+from abc import ABC
+from abc import abstractmethod
 from typing import List
 
 
-class Tokenizer:
-    _HYPHENS = {"-", "⸗", "="}
-
+class Tokenizer(ABC):
+    @abstractmethod
     def tokenize(self, text: str) -> List[str]:
         return NotImplemented
 
 
 class NautilusOcrTokenizer(Tokenizer):
+    _HYPHENS = {"-", "⸗", "="}
+
     def tokenize(self, text: str) -> List[str]:
         """Copied from features_epr.py"""
 
