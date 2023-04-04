@@ -15,7 +15,7 @@ class Page:
         ]
 
     def get_text(self):
-        return os.linesep.join(self._lines)
+        return os.linesep.join(self._lines())
 
     @classmethod
     def from_file(cls, file: Path):

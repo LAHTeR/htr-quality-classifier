@@ -4,6 +4,7 @@ from sklearn.base import ClassifierMixin
 
 from text_quality.settings import CLASSIFIER_FEATURES
 
+# TODO: delete (replaced with Pipeline)
 
 class Classifier:
     def __init__(self, classifier: ClassifierMixin) -> None:

@@ -1,23 +1,21 @@
 import os
 from pathlib import Path
 
+LOG_LEVEL=os.getenv("LOG_LEVEL", "INFO")
 
-Q_GRAM_LENGTH: int = os.environ.get("Q_GRAM_LENGTH")
+Q_GRAM_LENGTH: int = int(os.environ.get("Q_GRAM_LENGTH", "3"))
+Q_GRAMS_GAMMA: int = int(os.environ.get("Q_GRAMS_GAMMA", "1000"))
 
-CWD = Path(__file__).absolute
+CWD = Path(__file__).parent.absolute()
+
 DATA_DIR = CWD / "data"
+
 DICTS_DIR = DATA_DIR / "dicts"
 HUNSPELL_DIR = DICTS_DIR / "hunspell"
+
+QGRAMS_DIR = DATA_DIR / "qgrams"
+
 CLASSIFIER_DIR = DATA_DIR / "classifier"
 
-assert DATA_DIR.is_dir()
-assert DICTS_DIR.is_dir()
-assert HUNSPELL_DIR.is_dir()
-assert CLASSIFIER_DIR.is_dir()
-
-CLASSIFIER_FEATURES = [
-    "dict_score_normalized",
-    "dict_score_gt_normalized",
-    "n_gram_score_normalized",
-    "garbage_score_normalized",
-]
+for dir in (DATA_DIR, DICTS_DIR, HUNSPELL_DIR, CLASSIFIER_DIR):
+    assert dir.is_dir(), f"Directory not found: '{dir.absolute()}'."
