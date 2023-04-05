@@ -65,7 +65,7 @@ class TokenDictionary(Dictionary):
 
 class HunspellDictionary(Dictionary):
     def _lookup(self, token: str) -> bool:
-        return self._dictionary.lookup(token)
+        return len(token.strip()) > 0 and self._dictionary.lookup(token)
 
     @classmethod
     def from_path(cls, path: Path, language: str) -> "HunspellDictionary":

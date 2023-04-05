@@ -1,7 +1,11 @@
-from pathlib import Path
 import tempfile
+from pathlib import Path
 import pytest
+import spylls
+from text_quality.feature.scorer.dictionary import HunspellDictionary
 from text_quality.feature.scorer.dictionary import TokenDictionary
+from text_quality.settings import HUNSPELL_DIR
+from text_quality.settings import HUNSPELL_LANGUAGE
 
 
 ENCODING = "utf-8"
@@ -10,6 +14,11 @@ ENCODING = "utf-8"
 @pytest.fixture
 def token_dictionary():
     return TokenDictionary(["token"])
+
+
+@pytest.fixture
+def hunspell_dictionary():
+    return HunspellDictionary.from_path(HUNSPELL_DIR, HUNSPELL_LANGUAGE)
 
 
 @pytest.fixture
@@ -47,3 +56,22 @@ class TestTokenDictionary:
     )
     def test_score(self, token_dictionary, tokens, expected):
         assert token_dictionary.score(tokens) == pytest.approx(expected, 0.001)
+
+
+class TestHunspellDictionary:
+    def test_from_path(self, hunspell_dictionary):
+        assert len(hunspell_dictionary._dictionary.dic.index) == 177280
+        assert len(hunspell_dictionary._dictionary.dic.words) == 180960
+
+    @pytest.mark.parametrize(
+        "token, expected",
+        [("", False), ("Nederland", True), ("asdasdasdasdasdasdasds", False)],
+    )
+    def test_lookup(self, hunspell_dictionary, token, expected):
+        assert hunspell_dictionary._lookup(token) == expected
+
+    @pytest.mark.parametrize(
+        "text, expected", [("", 0), ("een test tekst", 0.8571428571428571)]
+    )
+    def test_score(self, hunspell_dictionary, text, expected):
+        assert hunspell_dictionary.score(text) == pytest.approx(expected)
