@@ -3,11 +3,11 @@ import csv
 import glob
 import logging
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 from typing import TypedDict
-
 from tqdm import tqdm
+from text_quality.classifier.pipeline import ClassifierScores
 from text_quality.classifier.pipeline import Pipeline
 from text_quality.feature.featurize import Featurizer
 from text_quality.feature.featurize import Scorers
@@ -66,9 +66,15 @@ if __name__ == "__main__":
         default=sys.stdout,
         help="Output file; defaults to stdout.",
     )
+    parser.add_argument(
+        "--output-scores",
+        action="store_true",
+        help="Output scores and text statistics.",
+    )
     args = parser.parse_args()
 
     ### INITIALIZE
+    # TODO: move to settings.py
     hunspell_language = "nl"
     token_dict_file: Path = DICTS_DIR / "nl_voc.txt"
     qgrams_file: Path = QGRAMS_DIR / "nl_voc.txt"
@@ -83,7 +89,7 @@ if __name__ == "__main__":
         Scorers(
             dict_score=HunspellDictionary.from_path(HUNSPELL_DIR, hunspell_language),
             dict_score_gt=TokenDictionary.from_file(token_dict_file),
-            n_gram_score=QGram.from_file(qgrams_file),  # , gamma=None
+            n_gram_score=QGram.from_file(qgrams_file),
             garbage_score=GarbageDetector(),
         ),
         tokenizer=tokenizer,
@@ -100,11 +106,28 @@ if __name__ == "__main__":
         for file in glob.glob(args.pagexml_glob)
     }
 
-    writer = csv.DictWriter(args.output, fieldnames=OutputRow.__annotations__.keys())
+    if args.output_scores:
+        fieldnames = (
+            OutputRow.__annotations__ | ClassifierScores.__annotations__
+        ).keys()
+    else:
+        fieldnames = OutputRow.__annotations__.keys()
+
+    writer = csv.DictWriter(args.output, fieldnames=fieldnames)
+    writer.writeheader()
 
     for name, text in tqdm(
         (text_inputs | pagexml_inputs | pagexml_glob_inputs).items(),
         desc="Processing",
         unit="file",
     ):
-        writer.writerow(OutputRow(filename=name, quality_class=pipeline.classify(text)))
+        if args.output_scores:
+            quality_class, classifier_scores = pipeline.classifiy_with_scores(text)
+            row = (
+                OutputRow(filename=name, quality_class=quality_class)
+                | classifier_scores
+            )
+        else:
+            row = OutputRow(filename=name, quality_class=pipeline.classify(text))
+
+        writer.writerow(row)

@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import Any, List, TypedDict
 import pandas as pd
 from .scorer.dictionary import HunspellDictionary
 from .scorer.dictionary import TokenDictionary
@@ -23,13 +23,16 @@ class Featurizer:
         self._scorers = scorers
         self._tokenizer = tokenizer
 
-    def featurize(self, text: str) -> dict[str, float]:
+    def featurize(self, text: str) -> tuple[dict[str, float], List[str]]:
         tokens = self._tokenizer.tokenize(text)
         return {
             feature: scorer.score(tokens) for feature, scorer in self._scorers.items()
-        }
+        }, tokens
 
-    def featurize_as_dataframe(self, text: str) -> pd.DataFrame:
-        return pd.DataFrame(
-            {feature: [value] for feature, value in self.featurize(text).items()}
-        )
+    def featurize_as_dataframe(self, text: str) -> tuple[pd.DataFrame, List[str]]:
+        features, tokens = self.featurize(text)
+        return Featurizer._as_dataframe(features), tokens
+
+    @staticmethod
+    def _as_dataframe(features: dict[str, float]) -> pd.DataFrame:
+        return pd.DataFrame({feature: [value] for feature, value in features.items()})
