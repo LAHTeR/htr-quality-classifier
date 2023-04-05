@@ -52,7 +52,7 @@ class TokenDictionary(Dictionary):
         tokens = sorted(self._dictionary) if sort else self._dictionary
         logging.info(f"Writing {len(tokens)} to file '{filepath}'.")
 
-        with open(filepath, "rt") as f:
+        with open(filepath, "wt") as f:
             f.write(line_separator.join(tokens))
 
     @classmethod
