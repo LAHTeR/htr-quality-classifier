@@ -86,6 +86,10 @@ if __name__ == "__main__":
         tokenizer=tokenizer,
     )
     pipeline = Pipeline.from_file(PIPELINE_FILE, featurizer)
+    if not pipeline.features == featurizer.features:
+        raise RuntimeError(
+            f"Pipline input features ({pipeline.features}) do not match scorers ({featurizer.features})."
+        )
 
     text_inputs = {f.name: os.linesep.join(f.readlines()) for f in args.input}
 

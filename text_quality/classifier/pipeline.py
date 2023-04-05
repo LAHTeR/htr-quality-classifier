@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+from typing import List
 from typing import TypedDict
 import joblib
 import pandas as pd
@@ -21,6 +22,10 @@ class Pipeline:
     ) -> None:
         self._pipeline = pipeline
         self._featurizer = featurizer
+
+    @property
+    def features(self) -> List[str]:
+        return list(self._pipeline.feature_names_in_)
 
     def classify(self, text) -> int:
         """Single instance classification"""
