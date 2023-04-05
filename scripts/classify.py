@@ -17,11 +17,12 @@ from text_quality.feature.scorer.garbage import GarbageDetector
 from text_quality.feature.scorer.q_gram import QGram
 from text_quality.feature.tokenizer import NautilusOcrTokenizer
 from text_quality.page.page import Page
-from text_quality.settings import CLASSIFIER_DIR
-from text_quality.settings import DICTS_DIR
 from text_quality.settings import HUNSPELL_DIR
+from text_quality.settings import HUNSPELL_LANGUAGE
 from text_quality.settings import LOG_LEVEL
-from text_quality.settings import QGRAMS_DIR
+from text_quality.settings import PIPELINE_FILE
+from text_quality.settings import QGRAMS_FILE
+from text_quality.settings import TOKEN_DICT_FILE
 
 
 logging.basicConfig(level=LOG_LEVEL)
@@ -73,28 +74,18 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    ### INITIALIZE
-    # TODO: move to settings.py
-    hunspell_language = "nl"
-    token_dict_file: Path = DICTS_DIR / "nl_voc.txt"
-    qgrams_file: Path = QGRAMS_DIR / "nl_voc.txt"
-    pipeline_file: Path = CLASSIFIER_DIR / "pipeline_nn.joblib"
-
-    for file in (token_dict_file, qgrams_file, pipeline_file):
-        assert file.is_file()
-
     tokenizer = NautilusOcrTokenizer()
 
     featurizer = Featurizer(
         Scorers(
-            dict_score=HunspellDictionary.from_path(HUNSPELL_DIR, hunspell_language),
-            dict_score_gt=TokenDictionary.from_file(token_dict_file),
-            n_gram_score=QGram.from_file(qgrams_file),
+            dict_score=HunspellDictionary.from_path(HUNSPELL_DIR, HUNSPELL_LANGUAGE),
+            dict_score_gt=TokenDictionary.from_file(TOKEN_DICT_FILE),
+            n_gram_score=QGram.from_file(QGRAMS_FILE),
             garbage_score=GarbageDetector(),
         ),
         tokenizer=tokenizer,
     )
-    pipeline = Pipeline.from_file(pipeline_file, featurizer)
+    pipeline = Pipeline.from_file(PIPELINE_FILE, featurizer)
 
     text_inputs = {f.name: os.linesep.join(f.readlines()) for f in args.input}
 
