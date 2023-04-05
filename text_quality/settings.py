@@ -3,6 +3,8 @@ from pathlib import Path
 
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 
+LINE_SEPARATOR = os.getenv("LINE_SEPARATOR", "\n")
+
 Q_GRAM_LENGTH: int = int(os.environ.get("Q_GRAM_LENGTH", "3"))
 Q_GRAMS_GAMMA: int = int(os.environ.get("Q_GRAMS_GAMMA", "1000"))
 

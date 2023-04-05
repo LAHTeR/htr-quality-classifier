@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import List
 from typing import Set
 from spylls import hunspell
+from text_quality.settings import LINE_SEPARATOR
 from .scorer import Scorer
 
 
@@ -39,13 +40,7 @@ class TokenDictionary(Dictionary):
     def _lookup(self, token: str) -> bool:
         return token in self._dictionary
 
-    def to_file(
-        self,
-        filepath: Path,
-        sort: bool = True,
-        overwrite: bool = False,
-        line_separator: str = "\n",
-    ):
+    def to_file(self, filepath: Path, sort: bool = True, overwrite: bool = False):
         if filepath.exists() and not overwrite:
             raise FileExistsError(filepath)
 
@@ -53,7 +48,7 @@ class TokenDictionary(Dictionary):
         logging.info(f"Writing {len(tokens)} to file '{filepath}'.")
 
         with open(filepath, "wt") as f:
-            f.write(line_separator.join(tokens))
+            f.write(LINE_SEPARATOR.join(tokens))
 
     @classmethod
     def from_file(cls, filepath: Path):

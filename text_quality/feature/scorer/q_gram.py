@@ -3,7 +3,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import List
 from typing import Optional
-from ...settings import Q_GRAM_LENGTH
+from ...settings import LINE_SEPARATOR, Q_GRAM_LENGTH
 from ...settings import Q_GRAMS_GAMMA
 from .scorer import Scorer
 
@@ -49,10 +49,16 @@ class QGram(Scorer):
         return score
 
     def score(self, tokens: List[str]) -> float:
-        return self._get_ngram_scores(QGram.get_qgrams(tokens))
+        return self._get_ngram_scores(QGram._get_qgrams(tokens))
+
+    def to_file(self, filepath: Path):
+        if filepath.exists():
+            raise FileExistsError(filepath)
+        with open(filepath, "wt") as f:
+            f.write(LINE_SEPARATOR.join(self._lang_qgrams))
 
     @staticmethod
-    def get_qgrams(tokens: List[str]):
+    def _get_qgrams(tokens: List[str]):
         """Copied, adapted from features_epr.py"""
         # TODO: re-implement
 
