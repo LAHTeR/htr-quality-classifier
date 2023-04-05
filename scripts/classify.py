@@ -117,7 +117,7 @@ if __name__ == "__main__":
         unit="file",
     ):
         if args.output_scores:
-            quality_class, classifier_scores = pipeline.classifiy_with_scores(text)
+            quality_class, classifier_scores = pipeline.classify_with_scores(text)
             row = (
                 OutputRow(filename=name, quality_class=quality_class)
                 | classifier_scores

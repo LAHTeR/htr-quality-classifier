@@ -32,7 +32,7 @@ class Pipeline:
         features, tokens = self._featurizer.featurize_as_dataframe(text)
         return self._pipeline.predict(features)[0]
 
-    def classifiy_with_scores(self, text) -> tuple[int, ClassifierScores]:
+    def classify_with_scores(self, text) -> tuple[int, ClassifierScores]:
         features, tokens = self._featurizer.featurize(text)
         features_df: pd.DataFrame = Featurizer._as_dataframe(features)
         confidence: float = self._pipeline.predict_proba(features_df).max()
