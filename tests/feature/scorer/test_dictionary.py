@@ -28,7 +28,7 @@ def token_file(tmp_path):
 
 
 class TestTokenDictionary:
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
 
     @pytest.mark.parametrize(
         "token,expected", [("token", True), ("test", False), ("", False)]
@@ -58,7 +58,7 @@ class TestTokenDictionary:
 
 
 class TestHunspellDictionary:
-    # pylint: disable=W0212
+    # pylint: disable=protected-access
 
     def test_from_path(self, hunspell_dictionary):
         assert len(hunspell_dictionary._dictionary.dic.index) == 177280

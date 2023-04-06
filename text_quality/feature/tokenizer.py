@@ -15,7 +15,7 @@ class NautilusOcrTokenizer(Tokenizer):
     def tokenize(self, text: str) -> List[str]:
         """Copied from features_epr.py"""
 
-        tokens = list()  # pylint: disable=R1734
+        tokens = []
 
         new_token = ""
         for c in text:

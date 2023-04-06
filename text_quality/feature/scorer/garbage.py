@@ -12,10 +12,10 @@ class GarbageDetector(Scorer):
     EPR_RULE5 = 8
     EPR_RULE9 = 2
 
-    def score(self, tokens: List[str]) -> float:
+    def score(self, tokens: List[str]) -> float:  # noqa: MC0001
         """Copied from features_epr.py"""
-        # pylint: disable=C0200,C0121,R0912,R0914,R0915
-        # noqa: MC0001
+        # pylint: disable=consider-using-enumerate,too-many-branches,too-many-locals,too-many-statements,chained-comparison
+
         issues = 0
 
         if len(tokens) == 0:
@@ -67,6 +67,7 @@ class GarbageDetector(Scorer):
                     alpha = False
                     vowel_streak = 0
                     consonant_streak = 0
+                    # pylint: disable=consider-using-in
                     if i != 0 and i != len(token) - 1:
                         non_outer_special_chars.add(char)
 
@@ -82,7 +83,7 @@ class GarbageDetector(Scorer):
                     go_to_next_token = True
                     break
 
-                if last_char != None and char == last_char:
+                if last_char is not None and char == last_char:
                     repitition_streak += 1
 
                     # rule 2

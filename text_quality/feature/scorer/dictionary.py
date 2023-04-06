@@ -52,7 +52,7 @@ class TokenDictionary(Dictionary):
 
     @classmethod
     def from_file(cls, filepath: Path):
-        logging.info(f"Reading token dictionary from file '{str(filepath)}'.")
+        logging.info("Reading token dictionary from file '%s'.", str(filepath))
         with open(filepath, "rt", encoding=ENCODING) as f:
             tokens = [line.strip() for line in f if not line.strip().startswith("#")]
         return cls(tokens)

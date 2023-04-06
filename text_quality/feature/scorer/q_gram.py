@@ -24,7 +24,7 @@ class QGram(Scorer):
 
     @lru_cache(maxsize=1024)
     def _get_ngram_score(self, ngram: str) -> float:
-        # pylint: disable=C0200
+        # pylint: disable=consider-using-enumerate
         for i in range(0, len(self._lang_qgrams)):
             if ngram == self._lang_qgrams[i]:
                 return 1 - (1 / len(self._lang_qgrams) * i)
@@ -60,7 +60,7 @@ class QGram(Scorer):
         q_grams = []
         for token in tokens:
             token_list = list(token)
-            # pylint: disable=C0200
+            # pylint: disable=consider-using-enumerate
             for i in range(0, len(token_list)):
                 if not token[i].isalpha():
                     token_list[i] = " "

@@ -19,7 +19,7 @@ def pipeline(featurizer) -> Pipeline:
 
 class TestPipeline:
     def test_from_file(self, sklearn_pipeline, featurizer):
-        # pylint: disable=W0212
+        # pylint: disable=protected-access
         assert (
             Pipeline.from_file(PIPELINE_FILE, featurizer)._pipeline.feature_names_in_
             == sklearn_pipeline.feature_names_in_
