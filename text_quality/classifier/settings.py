@@ -11,9 +11,8 @@ LINE_SEPARATOR = os.getenv("LINE_SEPARATOR", "\n")
 Q_GRAM_LENGTH: int = int(os.environ.get("Q_GRAM_LENGTH", "3"))
 Q_GRAMS_GAMMA: int = int(os.environ.get("Q_GRAMS_GAMMA", "1000"))
 
-CWD = Path(__file__).parent.absolute()
-
-DATA_DIR = CWD / "data"
+ROOT_DIR = Path(__file__).parent.parent
+DATA_DIR = ROOT_DIR / "data"
 
 DICTS_DIR = DATA_DIR / "dicts"
 HUNSPELL_DIR = DICTS_DIR / "hunspell"

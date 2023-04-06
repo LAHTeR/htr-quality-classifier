@@ -3,8 +3,8 @@ from abc import abstractmethod
 from pathlib import Path
 from typing import List
 from spylls import hunspell
-from ...settings import ENCODING
-from ...settings import LINE_SEPARATOR
+from ...classifier.settings import ENCODING
+from ...classifier.settings import LINE_SEPARATOR
 from .scorer import Scorer
 
 
