@@ -67,4 +67,4 @@ class TestPipeline:
     ):
         quality, scores = pipeline.classify_with_scores(text)
         assert quality == expected_class
-        assert scores == expected_scores
+        assert scores == pytest.approx(expected_scores)
