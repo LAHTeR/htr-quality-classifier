@@ -1,14 +1,11 @@
 import tempfile
 from pathlib import Path
 import pytest
-import spylls
 from text_quality.feature.scorer.dictionary import HunspellDictionary
 from text_quality.feature.scorer.dictionary import TokenDictionary
+from text_quality.settings import ENCODING
 from text_quality.settings import HUNSPELL_DIR
 from text_quality.settings import HUNSPELL_LANGUAGE
-
-
-ENCODING = "utf-8"
 
 
 @pytest.fixture
@@ -31,6 +28,8 @@ def token_file(tmp_path):
 
 
 class TestTokenDictionary:
+    # pylint: disable=W0212
+
     @pytest.mark.parametrize(
         "token,expected", [("token", True), ("test", False), ("", False)]
     )
@@ -59,6 +58,8 @@ class TestTokenDictionary:
 
 
 class TestHunspellDictionary:
+    # pylint: disable=W0212
+
     def test_from_path(self, hunspell_dictionary):
         assert len(hunspell_dictionary._dictionary.dic.index) == 177280
         assert len(hunspell_dictionary._dictionary.dic.words) == 180960

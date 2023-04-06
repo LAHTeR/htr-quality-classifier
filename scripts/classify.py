@@ -16,7 +16,7 @@ from text_quality.feature.scorer.dictionary import TokenDictionary
 from text_quality.feature.scorer.garbage import GarbageDetector
 from text_quality.feature.scorer.q_gram import QGram
 from text_quality.feature.tokenizer import NautilusOcrTokenizer
-from text_quality.page.page import Page
+from text_quality.page import Page
 from text_quality.settings import HUNSPELL_DIR
 from text_quality.settings import HUNSPELL_LANGUAGE
 from text_quality.settings import LOG_LEVEL
@@ -86,7 +86,7 @@ if __name__ == "__main__":
         tokenizer=tokenizer,
     )
     pipeline = Pipeline.from_file(PIPELINE_FILE, featurizer)
-    if not pipeline.features == featurizer.features:
+    if pipeline.features != featurizer.features:
         raise RuntimeError(
             f"Pipline input features ({pipeline.features}) do not match scorers ({featurizer.features})."
         )

@@ -2,9 +2,9 @@ import logging
 from abc import abstractmethod
 from pathlib import Path
 from typing import List
-from typing import Set
 from spylls import hunspell
-from text_quality.settings import LINE_SEPARATOR
+from ...settings import ENCODING
+from ...settings import LINE_SEPARATOR
 from .scorer import Scorer
 
 
@@ -17,20 +17,20 @@ class Dictionary(Scorer):
         return NotImplemented
 
     def score(self, tokens: List[str]) -> float:
-        if any(len(token) > 0 for token in tokens):
-            matched_count = 0
-            total_count = 0
-
-            for token in tokens:
-                total_count += len(token)
-
-                # TODO: lowercase token?
-                matched_count += self._lookup(token) * len(token)
-
-            return matched_count / total_count
-        else:
+        if not any(len(token) > 0 for token in tokens):
             # empty input
             return 0.0
+
+        matched_count = 0
+        total_count = 0
+
+        for token in tokens:
+            total_count += len(token)
+
+            # TODO: lowercase token?
+            matched_count += self._lookup(token) * len(token)
+
+        return matched_count / total_count
 
 
 class TokenDictionary(Dictionary):
@@ -45,15 +45,15 @@ class TokenDictionary(Dictionary):
             raise FileExistsError(filepath)
 
         tokens = sorted(self._dictionary) if sort else self._dictionary
-        logging.info(f"Writing {len(tokens)} to file '{filepath}'.")
+        logging.info("Writing %d tokens to file '%s'.", len(tokens), filepath)
 
-        with open(filepath, "wt") as f:
+        with open(filepath, "wt", encoding=ENCODING) as f:
             f.write(LINE_SEPARATOR.join(tokens))
 
     @classmethod
     def from_file(cls, filepath: Path):
         logging.info(f"Reading token dictionary from file '{str(filepath)}'.")
-        with open(filepath, "rt") as f:
+        with open(filepath, "rt", encoding=ENCODING) as f:
             tokens = [line.strip() for line in f if not line.strip().startswith("#")]
         return cls(tokens)
 
@@ -65,6 +65,6 @@ class HunspellDictionary(Dictionary):
     @classmethod
     def from_path(cls, path: Path, language: str) -> "HunspellDictionary":
         logging.info(
-            f"Reading Hunspell dictionary '{language}' in directory '{str(path)}'"
+            "Reading Hunspell dictionary '%s' in directory '%s'", language, str(path)
         )
         return cls(hunspell.Dictionary.from_files(str(path / language)))

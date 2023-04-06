@@ -36,8 +36,8 @@ class Featurizer:
 
     def featurize_as_dataframe(self, text: str) -> tuple[pd.DataFrame, List[str]]:
         features, tokens = self.featurize(text)
-        return Featurizer._as_dataframe(features), tokens
+        return Featurizer.as_dataframe(features), tokens
 
     @staticmethod
-    def _as_dataframe(features: dict[str, float]) -> pd.DataFrame:
+    def as_dataframe(features: dict[str, float]) -> pd.DataFrame:
         return pd.DataFrame({feature: [value] for feature, value in features.items()})

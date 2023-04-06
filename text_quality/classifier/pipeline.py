@@ -29,12 +29,12 @@ class Pipeline:
 
     def classify(self, text) -> int:
         """Single instance classification"""
-        features, tokens = self._featurizer.featurize_as_dataframe(text)
+        features, _ = self._featurizer.featurize_as_dataframe(text)
         return self._pipeline.predict(features)[0]
 
     def classify_with_scores(self, text) -> tuple[int, ClassifierScores]:
         features, tokens = self._featurizer.featurize(text)
-        features_df: pd.DataFrame = Featurizer._as_dataframe(features)
+        features_df: pd.DataFrame = Featurizer.as_dataframe(features)
         confidence: float = self._pipeline.predict_proba(features_df).max()
 
         return self._pipeline.predict(features_df)[0], ClassifierScores(
@@ -46,5 +46,5 @@ class Pipeline:
 
     @classmethod
     def from_file(cls, pipeline_file: Path, featurizer: Featurizer):
-        logging.info(f"Reading classifier pipeline from file '{str(pipeline_file)}'.")
+        logging.info("Reading classifier pipeline from file '%s'.", str(pipeline_file))
         return cls(joblib.load(pipeline_file), featurizer)

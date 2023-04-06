@@ -2,7 +2,6 @@ import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 from text_quality.feature.featurize import Scorers
-from ..conftest import featurizer
 
 
 class TestFeaturizer:

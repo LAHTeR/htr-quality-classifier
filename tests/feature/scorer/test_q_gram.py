@@ -25,6 +25,8 @@ class TestQGram:
         assert q_gram.score(tokens) == pytest.approx(expected)
 
     def test_to_from_file(self, tmp_path, q_gram):
+        # pylint: disable=W0212
+
         qgram_file = Path(tmp_path) / "qgrams.txt"
         q_gram.to_file(qgram_file)
 

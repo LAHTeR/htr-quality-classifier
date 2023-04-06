@@ -1,6 +1,9 @@
 import os
 from pathlib import Path
 
+ENCODING = "utf-8"
+"""Encoding to be used throughout all text file processing operations."""
+
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 
 LINE_SEPARATOR = os.getenv("LINE_SEPARATOR", "\n")
@@ -19,9 +22,9 @@ QGRAMS_DIR = DATA_DIR / "qgrams"
 
 CLASSIFIER_DIR = DATA_DIR / "classifier"
 
-for dir in (DATA_DIR, DICTS_DIR, HUNSPELL_DIR, CLASSIFIER_DIR):
-    if not dir.is_dir():
-        raise NotADirectoryError(dir)
+for directory in (DATA_DIR, DICTS_DIR, HUNSPELL_DIR, CLASSIFIER_DIR):
+    if not directory.is_dir():
+        raise NotADirectoryError(directory)
 
 
 ### INITIALIZE

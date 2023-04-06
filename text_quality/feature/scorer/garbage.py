@@ -14,7 +14,8 @@ class GarbageDetector(Scorer):
 
     def score(self, tokens: List[str]) -> float:
         """Copied from features_epr.py"""
-
+        # pylint: disable=C0200,C0121,R0912,R0914,R0915
+        # noqa: MC0001
         issues = 0
 
         if len(tokens) == 0:

@@ -3,7 +3,9 @@ from functools import lru_cache
 from pathlib import Path
 from typing import List
 from typing import Optional
-from ...settings import LINE_SEPARATOR, Q_GRAM_LENGTH
+from ...settings import ENCODING
+from ...settings import LINE_SEPARATOR
+from ...settings import Q_GRAM_LENGTH
 from ...settings import Q_GRAMS_GAMMA
 from .scorer import Scorer
 
@@ -16,13 +18,13 @@ class QGram(Scorer):
 
     @lru_cache
     def get_rank(self, qgram: str) -> Optional[int]:
-        if qgram in self._qgram_set:
-            return self._lang_qgrams.index(qgram)
-        else:
+        if qgram not in self._qgram_set:
             return None
+        return self._lang_qgrams.index(qgram)
 
-    @lru_cache(maxsize=None)
+    @lru_cache(maxsize=1024)
     def _get_ngram_score(self, ngram: str) -> float:
+        # pylint: disable=C0200
         for i in range(0, len(self._lang_qgrams)):
             if ngram == self._lang_qgrams[i]:
                 return 1 - (1 / len(self._lang_qgrams) * i)
@@ -30,8 +32,6 @@ class QGram(Scorer):
 
     def _get_ngram_scores(self, ngrams: List[str]) -> float:
         """Copied from features_epr.py"""
-        # TODO: this is very slow; pre-select q-grams that occur in self._qgrams, use rank
-        # TODO: check if this corresponds to equation 10 in the paper?
 
         if len(ngrams) == 0:
             return 0
@@ -40,10 +40,6 @@ class QGram(Scorer):
         for ngram in ngrams:
             if ngram in self._qgram_set:
                 score += self._get_ngram_score(ngram)
-            # for i in range(0, len(self._lang_qgrams)):
-            #     if ngram == self._lang_qgrams[i]:
-            #         score += 1 - (1 / len(self._lang_qgrams) * i)
-            #         break
 
         score = score / len(ngrams)
         return score
@@ -54,17 +50,17 @@ class QGram(Scorer):
     def to_file(self, filepath: Path):
         if filepath.exists():
             raise FileExistsError(filepath)
-        with open(filepath, "wt") as f:
+        with open(filepath, "wt", encoding=ENCODING) as f:
             f.write(LINE_SEPARATOR.join(self._lang_qgrams))
 
     @staticmethod
     def _get_qgrams(tokens: List[str]):
         """Copied, adapted from features_epr.py"""
-        # TODO: re-implement
 
-        q_grams = list()
+        q_grams = []
         for token in tokens:
             token_list = list(token)
+            # pylint: disable=C0200
             for i in range(0, len(token_list)):
                 if not token[i].isalpha():
                     token_list[i] = " "
@@ -79,16 +75,17 @@ class QGram(Scorer):
     @classmethod
     def from_file(cls, filepath: Path, gamma: int = Q_GRAMS_GAMMA):
         logging.info(
-            f"Reading character q-grams from file '{str(filepath)}', with gamma={gamma}."
+            "Reading character q-grams from file '%s', with gamma=%d.",
+            str(filepath),
+            gamma,
         )
         q_grams = []
-        with open(filepath, "rt") as f:
+        with open(filepath, "rt", encoding=ENCODING) as f:
             for line in f:
-                # TODO: call decode(encoding) for each line?
                 q_grams.append(line.strip())
                 if gamma and len(q_grams) >= gamma:
                     logging.info(
-                        f"Stopping reading q-grams list, {len(q_grams)} q-grams read."
+                        "Stopping reading q-grams list, %d q-grams read.", len(q_grams)
                     )
                     break
         return cls(q_grams)
