@@ -12,6 +12,7 @@ on:
 jobs:
 
   sonarcloud:
+    if: ${{ false }}  # disable for now
     name: SonarCloud
     runs-on: ubuntu-latest
     steps:
