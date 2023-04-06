@@ -6,6 +6,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Create Sonarcloud integration issue
+        if: ${{ false }}  # disable for now
         uses: JasonEtco/create-an-issue@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
