@@ -6,7 +6,7 @@ authors:
   -
     family-names: Schnober
     given-names: Carsten
-    orcid: "https://orcid.org/0000-0000-0000-0000"
+    orcid: "https://orcid.org/0000-0001-9139-1577"
 date-released: 20??-MM-DD
 doi: <insert your DOI here>
 version: "0.1.0"
@@ -15,4 +15,4 @@ keywords:
   - htr
   - ocr
 message: "If you use this software, please cite it using these metadata."
-license: Apache-2.0
+license: GPL-3.0
