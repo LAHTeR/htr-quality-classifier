@@ -17,6 +17,7 @@ class TestGarbageDetector:
             (["î" * 5], 1),
             (["k" * 7], 1),
             (["a" * 22, "token", "token"], 1 / 3),
+            (["´\"'@", "token", "token"], 1 / 3),
         ],
     )
     def test_score(self, garbage_detector, tokens, expected):
