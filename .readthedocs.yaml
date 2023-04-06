@@ -5,3 +5,8 @@ python:
       path: .
       extra_requirements:
         - dev
+build:
+  tools:
+    python:
+      version: "3.9"
+  os: ubuntu-22.04
