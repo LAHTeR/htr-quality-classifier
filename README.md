@@ -11,6 +11,12 @@ For instance, if you want to classify all `*.xml` files in the `pages/` director
 classify_text_quality.py --glob "page/*.xml" --output classifications.csv --output-scores
 ```
 
+Per input file, one output line is returned in CSV table format, along with the classification result:
+
+1. Good quality
+2. Medium quality
+3. Bad quality
+
 All supported parameters:
 
 ```shell
