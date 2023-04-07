@@ -15,6 +15,6 @@ To host the documentation of this repository please perform the following instru
       2. make sure laHTeR has been granted access.
       3. reload repository list on Read the Docs import page
 1. wait for the first build to be completed at <https://readthedocs.org/projects/htr-quality-classifier/builds>
-1. check that the link of the documentation badge in the [README.md](git@github.com:laHTeR/htr-quality-classifier) works
+1. check that the link of the documentation badge in the [README.md](https://github.com/laHTeR/htr-quality-classifier) works
 
-See [README.dev.md#](git@github.com:laHTeR/htr-quality-classifier/blob/main/README.dev.md#generating-the-api-docs) how to build documentation site locally.
+See [README.dev.md#](https://github.com/laHTeR/htr-quality-classifier/blob/main/README.dev.md#generating-the-api-docs) how to build documentation site locally.
