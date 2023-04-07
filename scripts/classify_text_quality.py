@@ -24,7 +24,7 @@ from text_quality.feature.scorer.dictionary import TokenDictionary
 from text_quality.feature.scorer.garbage import GarbageDetector
 from text_quality.feature.scorer.q_gram import QGram
 from text_quality.feature.tokenizer import NautilusOcrTokenizer
-from text_quality.page import Page
+from text_quality.page.page import Page
 
 
 logging.basicConfig(level=LOG_LEVEL)
