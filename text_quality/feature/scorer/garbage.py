@@ -13,7 +13,9 @@ class GarbageDetector(Scorer):
     EPR_RULE9 = 2
 
     def score(self, tokens: List[str]) -> float:  # noqa: MC0001
-        """Copied from features_epr.py"""
+        """
+        `See Nautilus-OCR <https://github.com/natliblux/nautilusocr/blob/2d4d59c45466b5cc8c9897798bd8b205a7f0c02c/src/epr/features_epr.py#L148>`_
+        """
         # pylint: disable=consider-using-enumerate,too-many-branches,too-many-locals,too-many-statements,chained-comparison
 
         issues = 0

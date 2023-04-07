@@ -1,3 +1,5 @@
+This license applies to the NL Hunspell dictionaries in text_quality/data/dicts.
+
 _for English, please see below_
 
 

@@ -31,8 +31,9 @@ class QGram(Scorer):
         raise AssertionError()
 
     def _get_ngram_scores(self, ngrams: List[str]) -> float:
-        """Copied from features_epr.py"""
-
+        """
+        `See Nautilus-OCR <https://github.com/natliblux/nautilusocr/blob/2d4d59c45466b5cc8c9897798bd8b205a7f0c02c/src/epr/features_epr.py#L51>`_
+        """
         if len(ngrams) == 0:
             return 0
 
@@ -55,7 +56,9 @@ class QGram(Scorer):
 
     @staticmethod
     def _get_qgrams(tokens: List[str]):
-        """Copied, adapted from features_epr.py"""
+        """
+        `See Nautilus-OCR <https://github.com/natliblux/nautilusocr/blob/2d4d59c45466b5cc8c9897798bd8b205a7f0c02c/src/epr/features_epr.py#L51>`_
+        """
 
         q_grams = []
         for token in tokens:

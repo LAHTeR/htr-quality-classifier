@@ -17,6 +17,9 @@ class Dictionary(Scorer):
         return NotImplemented
 
     def score(self, tokens: List[str]) -> float:
+        """
+        `See Nautilus-OCR <https://github.com/natliblux/nautilusocr/blob/2d4d59c45466b5cc8c9897798bd8b205a7f0c02c/src/epr/features_epr.py#L129>`_
+        """
         if not any(len(token) > 0 for token in tokens):
             # empty input
             return 0.0
