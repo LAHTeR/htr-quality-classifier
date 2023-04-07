@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+
 ENCODING = "utf-8"
 """Encoding to be used throughout all text file processing operations."""
 
