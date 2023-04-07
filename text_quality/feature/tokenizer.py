@@ -13,7 +13,7 @@ class NautilusOcrTokenizer(Tokenizer):
     _HYPHENS = {"-", "⸗", "="}
 
     def tokenize(self, text: str) -> List[str]:
-        """Copied from features_epr.py"""
+        """`Nautilus-OCR tokenizer <https://github.com/natliblux/nautilusocr/blob/2d4d59c45466b5cc8c9897798bd8b205a7f0c02c/src/epr/features_epr.py#L84>`_"""
 
         tokens = []
 

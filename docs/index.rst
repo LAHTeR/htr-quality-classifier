@@ -6,6 +6,8 @@
 Welcome to text_quality's documentation!
 ==========================================================
 
+`text_quality` is a package to classify the (digitization) quality of a text page.
+
 .. toctree::
   :maxdepth: 2
   :caption: Contents:

@@ -45,13 +45,15 @@ if __name__ == "__main__":
         type=argparse.FileType("rt"),
         nargs="*",
         default=[],
-        help="Plain text file to classify. Use '-' for stdin.",
+        metavar="FILE",
+        help="Plain text file(s) to classify. Use '-' for stdin.",
     )
     input_args.add_argument(
         "--pagexml",
         type=Path,
         nargs="*",
         default=[],
+        metavar="FILE",
         help="Input file(s) in PageXML format.",
     )
     input_args.add_argument(
@@ -59,6 +61,7 @@ if __name__ == "__main__":
         "--glob",
         default="",
         type=str,
+        metavar="PATTERN",
         help="A pattern to find a set of PageXML files, e.g. 'pagexml/*.xml'.",
     )
 
@@ -67,6 +70,7 @@ if __name__ == "__main__":
         "-o",
         type=argparse.FileType("wt"),
         default=sys.stdout,
+        metavar="FILE",
         help="Output file; defaults to stdout.",
     )
     parser.add_argument(
