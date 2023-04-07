@@ -3,8 +3,8 @@ import pytest
 import sklearn
 from text_quality.classifier.pipeline import ClassifierScores
 from text_quality.classifier.pipeline import Pipeline
-from text_quality.classifier.settings import PIPELINE_FILE
 from text_quality.feature.featurize import Scorers
+from text_quality.settings import PIPELINE_FILE
 
 
 @pytest.fixture

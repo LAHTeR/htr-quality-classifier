@@ -3,10 +3,10 @@ from functools import lru_cache
 from pathlib import Path
 from typing import List
 from typing import Optional
-from ...classifier.settings import ENCODING
-from ...classifier.settings import LINE_SEPARATOR
-from ...classifier.settings import Q_GRAM_LENGTH
-from ...classifier.settings import Q_GRAMS_GAMMA
+from ...settings import ENCODING
+from ...settings import LINE_SEPARATOR
+from ...settings import Q_GRAM_LENGTH
+from ...settings import Q_GRAMS_GAMMA
 from .scorer import Scorer
 
 

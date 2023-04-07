@@ -1,11 +1,11 @@
 import tempfile
 from pathlib import Path
 import pytest
-from text_quality.classifier.settings import ENCODING
-from text_quality.classifier.settings import HUNSPELL_DIR
-from text_quality.classifier.settings import HUNSPELL_LANGUAGE
 from text_quality.feature.scorer.dictionary import HunspellDictionary
 from text_quality.feature.scorer.dictionary import TokenDictionary
+from text_quality.settings import ENCODING
+from text_quality.settings import HUNSPELL_DIR
+from text_quality.settings import HUNSPELL_LANGUAGE
 
 
 @pytest.fixture
