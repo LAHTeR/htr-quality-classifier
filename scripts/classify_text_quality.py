@@ -108,13 +108,11 @@ if __name__ == "__main__":
             pagexml_inputs[pagexml] = Page.from_file(pagexml).get_text()
         except Exception as e:
             logging.error("Error parsing file '%s': %s", pagexml, str(e))
+            pagexml_inputs[pagexml] = ""
 
+    fieldnames = list(OutputRow.__annotations__.keys())
     if args.output_scores:
-        fieldnames = (
-            OutputRow.__annotations__ | ClassifierScores.__annotations__
-        ).keys()
-    else:
-        fieldnames = OutputRow.__annotations__.keys()
+        fieldnames += list(ClassifierScores.__annotations__.keys())
 
     writer = csv.DictWriter(args.output, fieldnames=fieldnames)
     writer.writeheader()
