@@ -38,6 +38,20 @@ Input:
 (lahter) carstenschnober@Carstens-MacBook-Pro htr-quality-classifier % 
 ```
 
+### Notes
+
+The pipeline might emit warnings like this:
+
+```shell
+UserWarning: X does not have valid feature names, but MLPClassifier was fitted with feature names
+```
+
+This is due to the internals of the [Scikit-Learn Pipeline object](https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html), and can safely be ignored.
+
+The dependencies are pinned to specific versions.
+While this prevents implicit updated even for patch-level updated of required libraries, it prevents misleading warnings emitted by varying Scikit-Learn versions.
+Hence, requirement dependecies can be changed manually, if you are aware of these issues.
+
 ## How to use text_quality
 
 A package to determine the quality of a a digitized text, from a handwritten script or scanned print (HTR/OCR output).
@@ -49,7 +63,7 @@ The project setup is documented in [project_setup.md](project_setup.md). Feel fr
 To install text_quality from GitHub repository, do:
 
 ```console
-git clone git@github.com:laHTeR/htr-quality-classifier.git
+git clone https://github.com/LAHTeR/htr-quality-classifier.git
 cd htr-quality-classifier
 python3 -m pip install .
 ```
@@ -71,7 +85,7 @@ This package was created with [Cookiecutter](https://github.com/audreyr/cookiecu
 
 ## Badges
 
-(Customize these badges with your own links, and check https://shields.io/ or https://badgen.net/ to see which other badges are available.)
+(Customize these badges with your own links, and check <https://shields.io/> or <https://badgen.net/> to see which other badges are available.)
 
 | fair-software.eu recommendations | |
 | :-- | :--  |
