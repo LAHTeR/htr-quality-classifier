@@ -6,6 +6,7 @@ import glob
 import logging
 import os
 import sys
+from itertools import chain
 from pathlib import Path
 from typing import TypedDict
 from tqdm import tqdm
@@ -99,13 +100,14 @@ if __name__ == "__main__":
 
     text_inputs = {f.name: os.linesep.join(f.readlines()) for f in args.input}
 
-    pagexml_inputs = {
-        pagexml.name: Page.from_file(pagexml).get_text() for pagexml in args.pagexml
-    }
-    pagexml_glob_inputs = {
-        file: Page.from_file(Path(file)).get_text()
-        for file in glob.glob(args.pagexml_glob)
-    }
+    pagexml_inputs = {}
+    for pagexml in chain(args.pagexml, glob.glob(args.pagexml_glob)):
+        if pagexml in pagexml_inputs:
+            logging.warning("Duplicate input file: '%s'", pagexml)
+        try:
+            pagexml_inputs[pagexml] = Page.from_file(pagexml).get_text()
+        except Exception as e:
+            logging.error("Error parsing file '%s': %s", pagexml, str(e))
 
     if args.output_scores:
         fieldnames = (
@@ -118,9 +120,7 @@ if __name__ == "__main__":
     writer.writeheader()
 
     for name, text in tqdm(
-        (text_inputs | pagexml_inputs | pagexml_glob_inputs).items(),
-        desc="Processing",
-        unit="file",
+        (text_inputs | pagexml_inputs).items(), desc="Processing", unit="file"
     ):
         if args.output_scores:
             quality_class, classifier_scores = pipeline.classify_with_scores(text)
