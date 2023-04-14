@@ -60,7 +60,13 @@ The project setup is documented in [project_setup.md](project_setup.md). Feel fr
 
 ## Installation
 
-To install text_quality from GitHub repository, do:
+To install the `text_quality` package:
+
+```console
+pip install text-quality
+```
+
+Alternatively, install the package from GitHub repository:
 
 ```console
 git clone https://github.com/LAHTeR/htr-quality-classifier.git
