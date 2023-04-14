@@ -7,7 +7,7 @@ A package to determine the quality of a a digitized text, from a handwritten scr
 After [installation](#installation), use the [classify_text_quality.py](scripts/classify_text_quality.py) script to classify PageXML or plain text files.
 For instance, if you want to classify all `*.xml` files in the `pages/` directory, use the `--glob` argument:
 
-```shell
+```console
 classify_text_quality.py --glob "page/*.xml" --output classifications.csv --output-scores
 ```
 
@@ -41,7 +41,7 @@ Input:
 
 The pipeline might emit warnings like this:
 
-```shell
+```console
 UserWarning: X does not have valid feature names, but MLPClassifier was fitted with feature names
 ```
 
