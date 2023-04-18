@@ -2,6 +2,17 @@
 
 A package to determine the quality of a a digitized text, from a handwritten script or scanned print (HTR/OCR output).
 
+The current pipeline is tuned on (historic) Dutch language, and will not perform well on other languages.
+However, the [underlying model](https://jdmdh.episciences.org/10239) has been used for other (Germanic) languages, and can be adapted and applied to texts of other languages and time periods.
+
+## What's Missing
+
+- Pipelines for languages other than historic Dutch
+- Automatic training procedure for creating and update pipelines
+- Additional features such as publication year.
+
+See [this notebook](notebooks/quality.ipynb) for a semi-automated pipeline creation process.
+
 ## How to use text_quality
 
 After [installation](#installation), use the [classify_text_quality.py](scripts/classify_text_quality.py) script to classify PageXML or plain text files.
