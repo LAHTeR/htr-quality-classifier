@@ -18,7 +18,7 @@ See [this notebook](notebooks/quality.ipynb) for a semi-automated pipeline creat
 After [installation](#installation), use the [classify_text_quality.py](scripts/classify_text_quality.py) script to classify PageXML or plain text files.
 For instance, if you want to classify all `*.xml` files in the `pages/` directory, use the `--glob` argument:
 
-```console
+```shell
 classify_text_quality.py --glob "page/*.xml" --output classifications.csv --output-scores
 ```
 
@@ -31,7 +31,7 @@ Per input file, one output line is returned in CSV table format, along with the 
 All supported parameters:
 
 ```console
-classify_text_quality.py --help
+$ classify_text_quality.py --help
 usage: Classify the quality of a (digitized) text. [-h] [--input [FILE ...]] [--pagexml [FILE ...]] [--pagexml-glob PATTERN] [--output FILE] [--output-scores]
 
 options:
@@ -68,13 +68,13 @@ The project setup is documented in [project_setup.md](project_setup.md). Feel fr
 
 To install the `text_quality` package:
 
-```console
+```shell
 pip install -U text-quality
 ```
 
 Alternatively, install the package from GitHub repository:
 
-```console
+```shell
 git clone https://github.com/LAHTeR/htr-quality-classifier.git
 cd htr-quality-classifier
 python3 -m pip install -U .
