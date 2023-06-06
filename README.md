@@ -5,6 +5,8 @@ A package to determine the quality of a a digitized text, from a handwritten scr
 The current pipeline is tuned on (historic) Dutch language, and will not perform well on other languages.
 However, the [underlying model](https://jdmdh.episciences.org/10239) has been used for other (Germanic) languages, and can be adapted and applied to texts of other languages and time periods.
 
+<img src="./qrcode.svg" width=100 height=100>
+
 ## What's Missing
 
 - Pipelines for languages other than historic Dutch
