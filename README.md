@@ -7,6 +7,35 @@ However, the [underlying model](https://jdmdh.episciences.org/10239) has been us
 
 <img src="./qrcode.svg" width=100 height=100>
 
+
+## Examples
+
+Good quality (not necessarily perfect):
+
+```
+Van
+Malacca den 29 maart 1.
+door zoo veel ruijmer handen te hebben,
+[…]
+Siac van waar op den 5=e deeser,
+na onse verschijde adhortaties, is over
+eeen gekomen
+zoo meede van Siac
+```
+
+Bad quality:
+```
+uijtkoops --
+winst suijverevense versis
+e ee
+,, 19
+1 oe
+na aftrek van
+5 p:s C: Commiss:s
+t 1a per 't geheel t p=s lb. off @'t geheeke
+[…]
+```
+
 ## What's Missing
 
 - Pipelines for languages other than historic Dutch
