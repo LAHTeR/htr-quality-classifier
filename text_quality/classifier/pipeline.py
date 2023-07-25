@@ -85,7 +85,6 @@ class Pipeline:
             logging.debug(
                 "Skipping short text: '%s' (%d characters).", page, len(page.strip())
             )
-            confidence = 1.0
             quality = EMPTY_PAGE_OUTPUT
             scores = default_scores_dict(0, confidence=1.0, n_characters=len(page))
         else:
@@ -94,9 +93,8 @@ class Pipeline:
 
             quality = self._pipeline.predict(features_df)[0]
 
-            confidence: float = self._pipeline.predict_proba(features_df).max()
             scores = ClassifierScores(
-                confidence=confidence,
+                confidence=self._pipeline.predict_proba(features_df).max(),
                 n_characters=len(page),
                 n_tokens=len(tokens),
                 **features
