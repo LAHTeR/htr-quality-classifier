@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from typing import Optional
 
+
 MINIMUM_PAGE_LENGTH: int = 5
 """Shorter texts are considered as empty."""
 
