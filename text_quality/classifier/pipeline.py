@@ -4,6 +4,7 @@ import logging
 from pathlib import Path
 from typing import List
 from typing import TypedDict
+from typing import Union
 import joblib
 import pandas as pd
 import sklearn.pipeline
@@ -46,7 +47,7 @@ class Pipeline:
         """The names of the features used in the pipeline."""
         return list(self._pipeline.feature_names_in_)
 
-    def classify(self, page: Page | str) -> int:
+    def classify(self, page: Union[Page, str]) -> int:
         """Single instance classification."""
 
         if isinstance(page, Page):
@@ -63,7 +64,7 @@ class Pipeline:
         return quality
 
     def _classify_pagexml(self, pagexml: Page) -> int:
-        """Classify a PageXML file."""
+        """Classify a Page object."""
 
         if all(len(line) < SHORT_COLUMN_WIDTH for line in pagexml.lines()):
             logging.warning("Page '%s' has short columns.", pagexml.id)
@@ -73,7 +74,9 @@ class Pipeline:
 
         return quality
 
-    def classify_with_scores(self, page: Page | str) -> tuple[int, ClassifierScores]:
+    def classify_with_scores(
+        self, page: Union[Page, str]
+    ) -> tuple[int, ClassifierScores]:
         """Single instance classification with scores."""
 
         if isinstance(page, Page):
@@ -104,6 +107,8 @@ class Pipeline:
     def _classify_pagexml_with_scores(
         self, pagexml: Page
     ) -> tuple[int, ClassifierScores]:
+        """Classify a Page object with scores."""
+
         if all(len(line) < SHORT_COLUMN_WIDTH for line in pagexml.lines()):
             logging.warning("Page '%s' has short columns.", pagexml.id)
 
