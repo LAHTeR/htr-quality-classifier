@@ -4,6 +4,9 @@ import os
 from pathlib import Path
 from typing import Optional
 
+MINIMUM_PAGE_LENGTH: int = 5
+"""Shorter texts are considered as empty."""
+
 EMPTY_PAGE_OUTPUT: Optional[int] = 0
 """Output value for empty pages.
 If None, empty pages are handled through the standard pipeline."""

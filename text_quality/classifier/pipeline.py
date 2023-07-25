@@ -10,6 +10,7 @@ import sklearn.pipeline
 from ..feature.featurize import Featurizer
 from ..feature.featurize import Scorers
 from ..settings import EMPTY_PAGE_OUTPUT
+from ..settings import MINIMUM_PAGE_LENGTH
 
 
 ClassifierScores = TypedDict(
@@ -36,9 +37,9 @@ class Pipeline:
 
     def classify(self, text) -> int:
         """Single instance classification."""
-        features, _ = self._featurizer.featurize_as_dataframe(text)
 
-        if text.strip() or EMPTY_PAGE_OUTPUT is None:
+        if (len(text.strip()) >= MINIMUM_PAGE_LENGTH) or (EMPTY_PAGE_OUTPUT is None):
+            features, _ = self._featurizer.featurize_as_dataframe(text)
             result = self._pipeline.predict(features)[0]
         else:
             result = EMPTY_PAGE_OUTPUT
@@ -47,10 +48,11 @@ class Pipeline:
 
     def classify_with_scores(self, text) -> tuple[int, ClassifierScores]:
         """Single instance classification with scores."""
-        features, tokens = self._featurizer.featurize(text)
-        features_df: pd.DataFrame = Featurizer.as_dataframe(features)
 
-        if text.strip() or EMPTY_PAGE_OUTPUT is None:
+        if (len(text.strip()) >= MINIMUM_PAGE_LENGTH) or (EMPTY_PAGE_OUTPUT is None):
+            features, tokens = self._featurizer.featurize(text)
+            features_df: pd.DataFrame = Featurizer.as_dataframe(features)
+
             confidence: float = self._pipeline.predict_proba(features_df).max()
             result = self._pipeline.predict(features_df)[0]
         else:
