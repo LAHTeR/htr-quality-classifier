@@ -1,6 +1,12 @@
+"""Global settings."""
+
 import os
 from pathlib import Path
+from typing import Optional
 
+EMPTY_PAGE_OUTPUT: Optional[int] = 0
+"""Output value for empty pages.
+If None, empty pages are handled through the standard pipeline."""
 
 ENCODING = "utf-8"
 """Encoding to be used throughout all text file processing operations."""

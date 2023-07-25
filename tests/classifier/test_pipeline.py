@@ -28,7 +28,7 @@ class TestPipeline:
     def test_features(self, pipeline):
         assert pipeline.features == list(Scorers.__annotations__.keys())
 
-    @pytest.mark.parametrize("text, expected", [("", 3), ("een Nederlands tekst", 1)])
+    @pytest.mark.parametrize("text, expected", [("", 0), ("een Nederlands tekst", 1)])
     def test_classify(self, pipeline, text, expected):
         assert pipeline.classify(text) == expected
 
@@ -37,9 +37,9 @@ class TestPipeline:
         [
             (
                 "",
-                3,
+                0,
                 ClassifierScores(
-                    confidence=0.9979264598992952,
+                    confidence=1.0,
                     dict_score=0,
                     dict_score_gt=0,
                     n_gram_score=0,
