@@ -32,3 +32,5 @@ venv3
 
 NL-HaNA*
 *.joblib
+
+.venv
