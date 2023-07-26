@@ -11,6 +11,11 @@ class Page:
     def __init__(self, page_doc: PageXMLScan) -> None:
         self._page_doc = page_doc
 
+    @property
+    def id(self) -> str:
+        """The page id."""
+        return self._page_doc.id
+
     def lines(self) -> List[str]:
         """Return lines from page."""
         return [
