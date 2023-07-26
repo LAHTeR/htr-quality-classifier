@@ -28,7 +28,10 @@ def default_scores_dict(default_value, **kwargs) -> ClassifierScores:
     """Generate a ClassifierScores dict with default values."""
 
     return ClassifierScores(
-        {field: default_value for field in ClassifierScores.__annotations__.keys()}
+        {
+            field: _type(default_value)
+            for field, _type in ClassifierScores.__annotations__.items()
+        }
         | kwargs
     )
 
@@ -66,7 +69,9 @@ class Pipeline:
     def _classify_pagexml(self, pagexml: Page) -> int:
         """Classify a Page object."""
 
-        if all(len(line) < SHORT_COLUMN_WIDTH for line in pagexml.lines()):
+        if pagexml.lines() and all(
+            len(line) < SHORT_COLUMN_WIDTH for line in pagexml.lines()
+        ):
             logging.warning("Page '%s' has short columns.", pagexml.id)
             quality = 3
         else:
