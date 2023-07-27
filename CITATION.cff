@@ -3,12 +3,11 @@
 cff-version: "1.2.0"
 title: "text_quality"
 authors:
-  -
-    family-names: Schnober
+  - family-names: Schnober
     given-names: Carsten
     orcid: "https://orcid.org/0000-0001-9139-1577"
-date-released: 20??-MM-DD
-doi: <insert your DOI here>
+date-released: 2023-07-27
+doi: https://doi.org/10.5281/zenodo.8189893
 version: "0.2.0"
 repository-code: "git@github.com:laHTeR/htr-quality-classifier"
 keywords:
