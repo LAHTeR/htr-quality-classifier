@@ -7,7 +7,6 @@ However, the [underlying model](https://jdmdh.episciences.org/10239) has been us
 
 <img src="./qrcode.svg" width=100 height=100>
 
-
 ## Examples
 
 Good quality (not necessarily perfect):
@@ -137,7 +136,7 @@ This package was created with [Cookiecutter](https://github.com/audreyr/cookiecu
 | (2/5) license                      | [![github license badge](https://img.shields.io/github/license/laHTeR/htr-quality-classifier)](https://github.com/laHTeR/htr-quality-classifier) |
 | (3/5) community registry           | [![RSD](https://img.shields.io/badge/rsd-text_quality-00a3e3.svg)](https://research-software-directory.org/projects/lahter) [![workflow pypi badge](https://img.shields.io/pypi/v/text_quality.svg?colorB=blue)](https://pypi.python.org/project/text_quality/) |
 | (4/5) citation                     | [![DOI](https://zenodo.org/badge/617998039.svg)](https://doi.org/10.5281/zenodo.8189893) |
-| (5/5) checklist                    | [![workflow cii badge](https://bestpractices.coreinfrastructure.org/projects/<replace-with-created-project-identifier>/badge)](https://bestpractices.coreinfrastructure.org/projects/<replace-with-created-project-identifier>) |
+| (5/5) checklist                    | [![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/7672/badge)](https://bestpractices.coreinfrastructure.org/projects/7672) |
 | howfairis                          | [![fair-software badge](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow)](https://fair-software.eu) |
 | **Other best practices**           | &nbsp; |
 | Static analysis                    | [![workflow scq badge](https://sonarcloud.io/api/project_badges/measure?project=LAHTeR_htr-quality-classifier&metric=alert_status)](https://sonarcloud.io/dashboard?id=LAHTeR_htr-quality-classifier) |
