@@ -95,7 +95,8 @@ if __name__ == "__main__":
     pipeline = Pipeline.from_file(PIPELINE_FILE, featurizer)
     if pipeline.features != featurizer.features:
         raise RuntimeError(
-            f"Pipline input features ({pipeline.features}) do not match scorers ({featurizer.features})."
+            f"Pipline input features ({pipeline.features})"
+            f"do not match scorers ({featurizer.features})."
         )
 
     text_inputs = {f.name: os.linesep.join(f.readlines()) for f in args.input}
@@ -105,7 +106,7 @@ if __name__ == "__main__":
         if pagexml in pagexml_inputs:
             logging.warning("Duplicate input file: '%s'", pagexml)
         try:
-            pagexml_inputs[pagexml] = Page.from_file(pagexml).get_text()
+            pagexml_inputs[pagexml] = Page.from_file(pagexml)
         except Exception as e:
             logging.error("Error parsing file '%s': %s", pagexml, str(e))
             pagexml_inputs[pagexml] = ""
@@ -117,16 +118,16 @@ if __name__ == "__main__":
     writer = csv.DictWriter(args.output, fieldnames=fieldnames)
     writer.writeheader()
 
-    for name, text in tqdm(
+    for name, page in tqdm(
         (text_inputs | pagexml_inputs).items(), desc="Processing", unit="file"
     ):
         if args.output_scores:
-            quality_class, classifier_scores = pipeline.classify_with_scores(text)
+            quality_class, classifier_scores = pipeline.classify_with_scores(page)
             row = (
                 OutputRow(filename=name, quality_class=quality_class)
                 | classifier_scores
             )
         else:
-            row = OutputRow(filename=name, quality_class=pipeline.classify(text))
+            row = OutputRow(filename=name, quality_class=pipeline.classify(page))
 
         writer.writerow(row)
