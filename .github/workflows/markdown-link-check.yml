@@ -11,7 +11,6 @@ on:
 jobs:
 
   markdown-link-check:
-    if: ${{ false }}  # disable for now
     name: Check markdown links
     runs-on: ubuntu-latest
     steps:
