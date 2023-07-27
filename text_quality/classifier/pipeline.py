@@ -24,15 +24,27 @@ ClassifierScores = TypedDict(
 """Container class for the scores returned by the classifier."""
 
 
-def default_scores_dict(default_value, **kwargs) -> ClassifierScores:
-    """Generate a ClassifierScores dict with default values."""
+def default_scores_dict(default_value, **fields) -> ClassifierScores:
+    """Generate a ClassifierScores dict with default values.
+
+    Args:
+        default_value: The default value for the scores.
+        fields: arguments to add to the dict, hence not taking the default value.
+    """
+
+    for field in fields:
+        if field not in ClassifierScores.__annotations__:
+            raise ValueError(
+                f"Unknown field '{field}'. "
+                f"Valid fields are: {ClassifierScores.__annotations__.keys()}"
+            )
 
     return ClassifierScores(
         {
             field: _type(default_value)
             for field, _type in ClassifierScores.__annotations__.items()
         }
-        | kwargs
+        | fields
     )
 
 
@@ -102,7 +114,7 @@ class Pipeline:
                 confidence=self._pipeline.predict_proba(features_df).max(),
                 n_characters=len(page),
                 n_tokens=len(tokens),
-                **features
+                **features,
             )
 
         return quality, scores

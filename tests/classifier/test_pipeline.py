@@ -1,3 +1,4 @@
+from contextlib import nullcontext as does_not_raise
 import joblib
 import pytest
 import sklearn
@@ -5,6 +6,7 @@ from pagexml.model.physical_document_model import PageXMLScan
 from pagexml.model.physical_document_model import PageXMLTextLine
 from text_quality.classifier.pipeline import ClassifierScores
 from text_quality.classifier.pipeline import Pipeline
+from text_quality.classifier.pipeline import default_scores_dict
 from text_quality.feature.featurize import Scorers
 from text_quality.page.page import Page
 from text_quality.settings import PIPELINE_FILE
@@ -130,3 +132,61 @@ class TestPipeline:
         quality, scores = pipeline.classify_with_scores(text)
         assert quality == expected_class
         assert scores == pytest.approx(expected_scores)
+
+
+@pytest.mark.parametrize(
+    "default_value, fields, expected, expected_exception",
+    [
+        (
+            0,
+            {},
+            ClassifierScores(
+                confidence=0.0,
+                n_characters=0,
+                n_tokens=0,
+                dict_score=0.0,
+                dict_score_gt=0.0,
+                n_gram_score=0.0,
+                garbage_score=0.0,
+            ),
+            does_not_raise(),
+        ),
+        (
+            1,
+            {},
+            ClassifierScores(
+                confidence=1.0,
+                n_characters=1,
+                n_tokens=1,
+                dict_score=1.0,
+                dict_score_gt=1.0,
+                n_gram_score=1.0,
+                garbage_score=1.0,
+            ),
+            does_not_raise(),
+        ),
+        (
+            0,
+            {"confidence": 1.0, "n_characters": 1},
+            ClassifierScores(
+                confidence=1.0,
+                n_characters=1,
+                n_tokens=0,
+                dict_score=0.0,
+                dict_score_gt=0.0,
+                n_gram_score=0.0,
+                garbage_score=0.0,
+            ),
+            does_not_raise(),
+        ),
+        (
+            0,
+            {"confidence": 1.0, "n_characters": 1, "invalid": 0},
+            None,
+            pytest.raises(ValueError, match=r"Unknown field 'invalid'.*"),
+        ),
+    ],
+)
+def test_default_scores_dict(default_value, fields, expected, expected_exception):
+    with expected_exception:
+        assert default_scores_dict(default_value, **fields) == expected
