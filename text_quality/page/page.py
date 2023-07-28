@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from typing import List
 from pagexml.model.physical_document_model import PageXMLScan
@@ -28,4 +29,8 @@ class Page:
 
     @classmethod
     def from_file(cls, file: Path):
-        return cls(parse_pagexml_file(file))
+        try:
+            return cls(parse_pagexml_file(file))
+        except TypeError as excp:
+            logging.error("Failed to parse file '%s': %s", file, excp)
+            return None
