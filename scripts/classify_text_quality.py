@@ -9,6 +9,8 @@ import sys
 from itertools import chain
 from pathlib import Path
 from typing import TypedDict
+from joblib import Parallel
+from joblib import delayed
 from tqdm import tqdm
 from text_quality.classifier.pipeline import ClassifierScores
 from text_quality.classifier.pipeline import Pipeline
@@ -79,6 +81,7 @@ if __name__ == "__main__":
         action="store_true",
         help="Output scores and text statistics.",
     )
+    parser.add_argument("--workers", type=int, default=os.cpu_count())
     args = parser.parse_args()
 
     tokenizer = NautilusOcrTokenizer()
@@ -99,17 +102,60 @@ if __name__ == "__main__":
             f"do not match scorers ({featurizer.features})."
         )
 
-    text_inputs = {f.name: os.linesep.join(f.readlines()) for f in args.input}
+    with Parallel(n_jobs=args.workers) as parallel:
+        text_inputs: dict[str, str] = dict(
+            zip(
+                [file.name for file in args.input],
+                parallel(
+                    delayed(lambda f: os.linesep.join(f.readlines()))(file)
+                    for file in args.input
+                ),
+            )
+        )
 
-    pagexml_inputs = {}
-    for pagexml in chain(args.pagexml, glob.glob(args.pagexml_glob)):
-        if pagexml in pagexml_inputs:
-            logging.warning("Duplicate input file: '%s'", pagexml)
-        try:
-            pagexml_inputs[pagexml] = Page.from_file(pagexml)
-        except Exception as e:
-            logging.error("Error parsing file '%s': %s", pagexml, str(e))
-            pagexml_inputs[pagexml] = ""
+        pagexml_inputs: dict[Path, Page] = {
+            path: pagexml
+            for path, pagexml in zip(
+                chain(args.pagexml, glob.glob(args.pagexml_glob)),
+                parallel(
+                    delayed(Page.from_file)(path)
+                    for path in chain(args.pagexml, glob.glob(args.pagexml_glob))
+                ),
+            )
+            if pagexml
+        }
+
+        if args.output_scores:
+            rows = (
+                OutputRow(filename=filename, quality_class=quality_class)
+                for filename, quality_class in zip(
+                    (text_inputs | pagexml_inputs).keys(),
+                    parallel(
+                        delayed(pipeline.classify)(page)
+                        for page in tqdm(
+                            (text_inputs | pagexml_inputs).values(),
+                            desc="Processing",
+                            unit="file",
+                        )
+                    ),
+                )
+            )
+        else:
+            rows = (
+                OutputRow(filename=filename, quality_class=quality_class)
+                | classifier_scores
+                for filename, (quality_class, classifier_scores) in tqdm(
+                    zip(
+                        (text_inputs | pagexml_inputs).keys(),
+                        parallel(
+                            delayed(pipeline.classify_with_scores)(page)
+                            for page in (text_inputs | pagexml_inputs).values()
+                        ),
+                    ),
+                    desc="Processing",
+                    unit="file",
+                )
+            )
 
     fieldnames = list(OutputRow.__annotations__.keys())
     if args.output_scores:
@@ -118,16 +164,4 @@ if __name__ == "__main__":
     writer = csv.DictWriter(args.output, fieldnames=fieldnames)
     writer.writeheader()
 
-    for name, page in tqdm(
-        (text_inputs | pagexml_inputs).items(), desc="Processing", unit="file"
-    ):
-        if args.output_scores:
-            quality_class, classifier_scores = pipeline.classify_with_scores(page)
-            row = (
-                OutputRow(filename=name, quality_class=quality_class)
-                | classifier_scores
-            )
-        else:
-            row = OutputRow(filename=name, quality_class=pipeline.classify(page))
-
-        writer.writerow(row)
+    writer.writerows(rows)
