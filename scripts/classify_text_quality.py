@@ -30,8 +30,12 @@ from text_quality.settings import TOKEN_DICT_FILE
 
 logging.basicConfig(level=LOG_LEVEL)
 
+REASON_FIELDNAME = "Reason"
+
 
 class OutputRow(TypedDict):
+    """Container class for the rows in the CSV output."""
+
     filename: str
     quality_class: int
 
@@ -77,7 +81,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--output-scores",
         action="store_true",
-        help="Output scores and text statistics.",
+        help="Output scores and text statistics, and reason for classification.",
     )
     args = parser.parse_args()
 
@@ -113,7 +117,7 @@ if __name__ == "__main__":
 
     fieldnames = list(OutputRow.__annotations__.keys())
     if args.output_scores:
-        fieldnames += list(ClassifierScores.__annotations__.keys())
+        fieldnames += list(ClassifierScores.__annotations__.keys()) + [REASON_FIELDNAME]
 
     writer = csv.DictWriter(args.output, fieldnames=fieldnames)
     writer.writeheader()
@@ -122,10 +126,13 @@ if __name__ == "__main__":
         (text_inputs | pagexml_inputs).items(), desc="Processing", unit="file"
     ):
         if args.output_scores:
-            quality_class, classifier_scores = pipeline.classify_with_scores(page)
+            quality_class, classifier_scores, reason = pipeline.classify_with_scores(
+                page
+            )
             row = (
                 OutputRow(filename=name, quality_class=quality_class)
                 | classifier_scores
+                | {REASON_FIELDNAME: reason.name}
             )
         else:
             row = OutputRow(filename=name, quality_class=pipeline.classify(page))

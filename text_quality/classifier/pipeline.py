@@ -1,6 +1,8 @@
 """Classification pipeline."""
 
 import logging
+from enum import Enum
+from enum import auto
 from pathlib import Path
 from typing import List
 from typing import TypedDict
@@ -22,6 +24,14 @@ ClassifierScores = TypedDict(
     | {score: float for score in Scorers.__annotations__.keys()},
 )
 """Container class for the scores returned by the classifier."""
+
+
+class Reason(Enum):
+    """Reasons for the classification result."""
+
+    CLASSIFIER = auto()
+    SHORT_COLUMNS = auto()
+    EMPTY = auto()
 
 
 def default_scores_dict(default_value, **fields) -> ClassifierScores:
@@ -93,17 +103,18 @@ class Pipeline:
 
     def classify_with_scores(
         self, page: Union[Page, str]
-    ) -> tuple[int, ClassifierScores]:
+    ) -> tuple[int, ClassifierScores, Reason]:
         """Single instance classification with scores."""
 
         if isinstance(page, Page):
-            quality, scores = self._classify_pagexml_with_scores(page)
+            quality, scores, reason = self._classify_pagexml_with_scores(page)
         elif self._is_short(page):
             logging.debug(
                 "Skipping short text: '%s' (%d characters).", page, len(page.strip())
             )
             quality = EMPTY_PAGE_OUTPUT
             scores = default_scores_dict(0, confidence=1.0, n_characters=len(page))
+            reason = Reason.EMPTY
         else:
             features, tokens = self._featurizer.featurize(page)
             features_df: pd.DataFrame = Featurizer.as_dataframe(features)
@@ -116,12 +127,13 @@ class Pipeline:
                 n_tokens=len(tokens),
                 **features,
             )
+            reason = Reason.CLASSIFIER
 
-        return quality, scores
+        return quality, scores, reason
 
     def _classify_pagexml_with_scores(
         self, pagexml: Page
-    ) -> tuple[int, ClassifierScores]:
+    ) -> tuple[int, ClassifierScores, Reason]:
         """Classify a Page object with scores."""
 
         if all(len(line) < SHORT_COLUMN_WIDTH for line in pagexml.lines()):
@@ -131,10 +143,11 @@ class Pipeline:
             scores = default_scores_dict(
                 0, confidence=1.0, n_characters=len(pagexml.get_text())
             )
+            reason = Reason.SHORT_COLUMNS
         else:
-            quality, scores = self.classify_with_scores(pagexml.get_text())
+            quality, scores, reason = self.classify_with_scores(pagexml.get_text())
 
-        return quality, scores
+        return quality, scores, reason
 
     @staticmethod
     def _is_short(text: str):

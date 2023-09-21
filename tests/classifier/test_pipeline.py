@@ -4,7 +4,7 @@ import pytest
 import sklearn
 from pagexml.model.physical_document_model import PageXMLScan
 from pagexml.model.physical_document_model import PageXMLTextLine
-from text_quality.classifier.pipeline import ClassifierScores
+from text_quality.classifier.pipeline import ClassifierScores, Reason
 from text_quality.classifier.pipeline import Pipeline
 from text_quality.classifier.pipeline import default_scores_dict
 from text_quality.feature.featurize import Scorers
@@ -57,7 +57,7 @@ class TestPipeline:
         assert pipeline.classify(page) == expected
 
     @pytest.mark.parametrize(
-        "text, expected_class, expected_scores",
+        "text, expected_class, expected_scores, expected_reason",
         [
             (
                 "",
@@ -71,6 +71,7 @@ class TestPipeline:
                     n_characters=0,
                     n_tokens=0,
                 ),
+                Reason.EMPTY,
             ),
             (
                 "een Nederlands tekst",
@@ -84,6 +85,7 @@ class TestPipeline:
                     n_characters=20,
                     n_tokens=3,
                 ),
+                Reason.CLASSIFIER,
             ),
             (
                 Page(PageXMLScan(lines=[PageXMLTextLine(text="test")])),
@@ -97,6 +99,7 @@ class TestPipeline:
                     n_characters=4,
                     n_tokens=0,
                 ),
+                Reason.SHORT_COLUMNS,
             ),
             (
                 Page(PageXMLScan(lines=[PageXMLTextLine(text="een Nederlands tekst")])),
@@ -110,6 +113,7 @@ class TestPipeline:
                     n_characters=20,
                     n_tokens=3,
                 ),
+                Reason.CLASSIFIER,
             ),
             (
                 Page(PageXMLScan(lines=[PageXMLTextLine(text="test")] * 10)),
@@ -123,15 +127,18 @@ class TestPipeline:
                     n_characters=49,
                     n_tokens=0,
                 ),
+                Reason.SHORT_COLUMNS,
             ),
         ],
     )
+    # pylint: disable=too-many-arguments
     def test_classify_with_scores(
-        self, pipeline, text, expected_class, expected_scores
+        self, pipeline, text, expected_class, expected_scores, expected_reason
     ):
-        quality, scores = pipeline.classify_with_scores(text)
+        quality, scores, reason = pipeline.classify_with_scores(text)
         assert quality == expected_class
         assert scores == pytest.approx(expected_scores)
+        assert reason == expected_reason
 
 
 @pytest.mark.parametrize(
