@@ -12,7 +12,9 @@ import pandas as pd
 import sklearn.pipeline
 from ..feature.featurize import Featurizer
 from ..feature.featurize import Scorers
+from ..language.fasttext import FastTextLanguageClassifier
 from ..page.page import Page
+from ..settings import DEFAULT_LANGUAGE
 from ..settings import EMPTY_PAGE_OUTPUT
 from ..settings import MINIMUM_PAGE_LENGTH
 from ..settings import SHORT_COLUMN_WIDTH
@@ -20,7 +22,13 @@ from ..settings import SHORT_COLUMN_WIDTH
 
 ClassifierScores = TypedDict(
     "ClassifierScores",
-    {"confidence": float, "n_characters": int, "n_tokens": int}
+    {
+        "confidence": float,
+        "n_characters": int,
+        "n_tokens": int,
+        "language": str,
+        "language_confidence": float,
+    }
     | {score: float for score in Scorers.__annotations__.keys()},
 )
 """Container class for the scores returned by the classifier."""
@@ -32,6 +40,7 @@ class Reason(Enum):
     CLASSIFIER = auto()
     SHORT_COLUMNS = auto()
     EMPTY = auto()
+    LANGUAGE = auto()  # language differs from default
 
 
 def default_scores_dict(default_value, **fields) -> ClassifierScores:
@@ -62,10 +71,15 @@ class Pipeline:
     """A wrapper around an sklearn pipeline that adds a featurizer."""
 
     def __init__(
-        self, pipeline: sklearn.pipeline.Pipeline, featurizer: Featurizer
+        self,
+        pipeline: sklearn.pipeline.Pipeline,
+        featurizer: Featurizer,
+        default_language: str = DEFAULT_LANGUAGE,
     ) -> None:
         self._pipeline = pipeline
         self._featurizer = featurizer
+        self._default_language = default_language
+        self._language_classifier = FastTextLanguageClassifier()
 
     @property
     def features(self) -> List[str]:
@@ -83,8 +97,17 @@ class Pipeline:
             )
             quality = EMPTY_PAGE_OUTPUT
         else:
-            features, _ = self._featurizer.featurize_as_dataframe(page)
-            quality = self._pipeline.predict(features)[0]
+            language, _ = self._language_classifier.classify(page)
+            if language == self._default_language:
+                features, _ = self._featurizer.featurize_as_dataframe(page)
+                quality = self._pipeline.predict(features)[0]
+            else:
+                logging.info(
+                    "Language '%s' differs from default language '%s'.",
+                    language,
+                    self._default_language,
+                )
+                quality = EMPTY_PAGE_OUTPUT
 
         return quality
 
@@ -116,18 +139,37 @@ class Pipeline:
             scores = default_scores_dict(0, confidence=1.0, n_characters=len(page))
             reason = Reason.EMPTY
         else:
-            features, tokens = self._featurizer.featurize(page)
-            features_df: pd.DataFrame = Featurizer.as_dataframe(features)
+            language, language_confidence = self._language_classifier.classify(page)
+            if language == self._default_language:
+                features, tokens = self._featurizer.featurize(page)
+                features_df: pd.DataFrame = Featurizer.as_dataframe(features)
 
-            quality = self._pipeline.predict(features_df)[0]
+                quality = self._pipeline.predict(features_df)[0]
 
-            scores = ClassifierScores(
-                confidence=self._pipeline.predict_proba(features_df).max(),
-                n_characters=len(page),
-                n_tokens=len(tokens),
-                **features,
-            )
-            reason = Reason.CLASSIFIER
+                scores = ClassifierScores(
+                    confidence=self._pipeline.predict_proba(features_df).max(),
+                    n_characters=len(page),
+                    n_tokens=len(tokens),
+                    language=language,
+                    language_confidence=language_confidence,
+                    **features,
+                )
+                reason = Reason.CLASSIFIER
+            else:
+                logging.info(
+                    "Language '%s' differs from default language '%s'.",
+                    language,
+                    self._default_language,
+                )
+                reason = Reason.LANGUAGE
+                quality = EMPTY_PAGE_OUTPUT
+                scores = default_scores_dict(
+                    0,
+                    confidence=0.0,
+                    n_characters=len(page),
+                    language=language,
+                    language_confidence=language_confidence,
+                )
 
         return quality, scores, reason
 
