@@ -43,30 +43,25 @@ class TestFastTextLanguageClassifier:
     def test_classify(
         self, model_file: Path, text: str, expected_language, expected_confidence
     ) -> str:
+        classifier = FastTextLanguageClassifier(model_file=model_file)
         assert (
             expected_language,
             expected_confidence,
-        ) == FastTextLanguageClassifier().classify(text, model_file=model_file)
+        ) == classifier.classify(text)
 
     @pytest.mark.parametrize(
-        "model_file,download,expected_exception",
+        "model_file,expected_exception",
         [
-            (Path("lid.176.ftz"), True, does_not_raise()),
-            (Path("unknown_model"), True, pytest.raises(ValueError)),
-            (Path("lid.176.ftz"), False, pytest.raises(FileNotFoundError)),
+            (Path("lid.176.ftz"), does_not_raise()),
+            (Path("unknown_model"), pytest.raises(ValueError)),
         ],
     )
-    def test_download(self, tmp_path: Path, model_file, download, expected_exception):
+    def test_download(self, tmp_path: Path, model_file, expected_exception):
         """Download model file."""
         model_path = tmp_path / model_file
-        assert not model_path.exists()
-
-        with pytest.raises(FileNotFoundError):
-            FastTextLanguageClassifier().classify(
-                "An English text", model_file=model_path, download=False
-            )
 
         with expected_exception:
-            assert FastTextLanguageClassifier().classify(
-                "An English text", model_file=model_path, download=download
-            ) == ("en", 1.0)
+            classifier = FastTextLanguageClassifier(model_file=model_path)
+            assert ("en", 1.0) == classifier.classify(
+                "An English text",
+            )

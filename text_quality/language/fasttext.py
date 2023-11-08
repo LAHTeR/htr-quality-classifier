@@ -4,7 +4,6 @@ import tempfile
 import urllib.request
 from collections import Counter
 from pathlib import Path
-from urllib.error import URLError
 import fasttext
 from numpy.typing import ArrayLike
 from .classifier import LanguageClassifier
@@ -25,62 +24,46 @@ class FastTextLanguageClassifier(LanguageClassifier):
     _LABEL_PREFIX: str = "__label__"
     """The classifier always returns labels with this prefix; removed before returning it."""
 
-    def classify(
-        self,
-        text: str,
-        *,
-        model_file: Path = _DEFAULT_MODEL_PATH,
-        download=True,
-        line_threshold: float = 0.5,
-    ) -> tuple[str, float]:
-        """Classify a text string.
+    def __init__(
+        self, *, model_file: Path = _DEFAULT_MODEL_PATH, line_threshold: float = 0.5
+    ):
+        """Initialize the classifier.
 
         If the model file is not found locally, it will be downloaded automatically.
-
         There is currently no check in place to validate an existing model file.
 
         Args:
-            text (str): The text to classify.
             model_file (Path): the local path to the model file.
             download (bool): whether to download the model file if it is not found locally.
             line_threshold (float): filter out predictions for lines where the classifier confidence is below this threshold.
-        Returns:
-            A tuple[str, float] with the language code (e.g. "nl") and the confidence.
+
         Raises:
-            FileNotFoundError: if the model file is not found locally and download=False.
             ValueError: if the model file is not found locally and no download location is known.
             RuntimeError: if the model file is not found locally and download fails.
         """
-        if model_file.is_file():
-            model = fasttext.load_model(str(model_file))
-        elif download:
-            try:
-                FastTextLanguageClassifier._download_model(
-                    model_file.name, target=model_file
-                )
-            except KeyError as e:
-                raise ValueError(
-                    f"Model file '{model_file}' not found, and no download location known for '{model_file.name}'."
-                ) from e
-            except URLError as e:
-                raise RuntimeError(
-                    f"Model file '{model_file}' not found, and download failed."
-                ) from e
+        super().__init__()
 
-            # Retry with downloaded model file, do not retry to download
-            return self.classify(
-                text,
-                model_file=model_file,
-                download=False,
-                line_threshold=line_threshold,
-            )
-        else:
-            raise FileNotFoundError(f"Model file '{model_file}' not found.")
+        if not model_file.exists():
+            self._download_model(model_file)
+        self._model = fasttext.load_model(str(model_file))
+
+        self._line_threshold = line_threshold
+
+    def classify(self, text: str) -> tuple[str, float]:
+        """Classify a text string.
+
+        Args:
+            text (str): The text to classify.
+        Returns:
+            A tuple[str, float] with the language code (e.g. "nl") and the confidence.
+        """
 
         lines: list[str] = [
             LanguageClassifier.preprocess(line) for line in text.split("\n")
         ]
-        line_labels, line_confidences = model.predict(lines, threshold=line_threshold)
+        line_labels, line_confidences = self._model.predict(
+            lines, threshold=self._line_threshold
+        )
         language, confidence = FastTextLanguageClassifier._aggregate_lines(
             line_labels, line_confidences
         )
@@ -88,13 +71,18 @@ class FastTextLanguageClassifier(LanguageClassifier):
         return language.removeprefix(self._LABEL_PREFIX), confidence
 
     @staticmethod
-    def _download_model(model: str, target: Path):
-        url = FastTextLanguageClassifier.MODEL_URLS[model]
+    def _download_model(model_file: Path):
+        try:
+            url = FastTextLanguageClassifier.MODEL_URLS[model_file.name]
+        except KeyError as e:
+            raise ValueError(
+                f"No download location known for '{model_file.name}'."
+            ) from e
 
-        target.parent.mkdir(parents=True, exist_ok=True)
+        model_file.parent.mkdir(parents=True, exist_ok=True)
 
-        logging.info("Downloading from '%s', storing at '%s' .", model, url)
-        with urllib.request.urlopen(url) as response, target.open("wb") as out_file:
+        logging.info("Downloading from '%s', storing at '%s' .", model_file, url)
+        with urllib.request.urlopen(url) as response, model_file.open("wb") as out_file:
             shutil.copyfileobj(response, out_file)
 
     @staticmethod
