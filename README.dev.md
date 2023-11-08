@@ -89,6 +89,15 @@ You can enable automatic linting with `prospector` and `isort` on commit by enab
 git config --local core.hooksPath .githooks
 ```
 
+## Generating the Architecture Diagram
+
+The architecture diagram is stored in the [classes_text_quality.svg](classes_text_quality.svg) file, and displayed in the [README.md](README.md) file.
+To update it, use [pyreverse](https://pylint.readthedocs.io/en/latest/pyreverse.html) from the [pylint](https://pypi.org/project/pylint/) package:
+
+```shell
+pyreverse --output svg --project text_quality text_quality
+```
+
 ## Generating the API docs
 
 ```shell
