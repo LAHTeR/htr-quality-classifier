@@ -17,11 +17,11 @@ class FastTextLanguageClassifier(LanguageClassifier):
         "lid.176.bin": "https://dl.fbaipublicfiles.com/fasttext/supervised-models/lid.176.bin",  # 126mb
     }
     """URLs for the FastText language models for automatic download."""
+    _MODEL_FILE_MD5SUMS = {}
 
     _LABEL_PREFIX = "__label__"
     """The classifier always returns labels with this prefix; will be removed."""
 
-    # noqa: W0221
     def classify(
         self, text: str, *, model_file: Path = Path("lid.176.ftz"), download=True
     ) -> tuple[str, float]:

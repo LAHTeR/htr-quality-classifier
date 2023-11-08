@@ -8,17 +8,18 @@ class LanguageClassifier(abc.ABC):
     REMOVE_CHARACTERS = string.punctuation + "„"
 
     @abc.abstractmethod
-    def classify(self, text: str, **kwargs) -> tuple[str, float]:
+    def classify(self, text: str) -> tuple[str, float]:
         """Classify a text string.
 
         Args:
             text: The text to classify.
-            **kwargs: Additional arguments to the classifier.
+
         Returns:
             A tuple with the language and the confidence.
         """
         return NotImplemented
 
+    @staticmethod
     def preprocess(text: str) -> str:
         for c in LanguageClassifier.REMOVE_CHARACTERS:
             text = text.replace(c, " ")  # noqa: self-cls-assignment
