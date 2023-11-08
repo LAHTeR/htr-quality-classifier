@@ -31,7 +31,7 @@ class FastTextLanguageClassifier(LanguageClassifier):
         *,
         model_file: Path = _DEFAULT_MODEL_PATH,
         download=True,
-        threshold: float = 0.5,
+        line_threshold: float = 0.5,
     ) -> tuple[str, float]:
         """Classify a text string.
 
@@ -43,7 +43,7 @@ class FastTextLanguageClassifier(LanguageClassifier):
             text (str): The text to classify.
             model_file (Path): the local path to the model file.
             download (bool): whether to download the model file if it is not found locally.
-            threshold (float): filter out predictions for lines where the classifier confidence is below this threshold.
+            line_threshold (float): filter out predictions for lines where the classifier confidence is below this threshold.
         Returns:
             A tuple[str, float] with the language code (e.g. "nl") and the confidence.
         Raises:
@@ -69,7 +69,10 @@ class FastTextLanguageClassifier(LanguageClassifier):
 
             # Retry with downloaded model file, do not retry to download
             return self.classify(
-                text, model_file=model_file, download=False, threshold=threshold
+                text,
+                model_file=model_file,
+                download=False,
+                line_threshold=line_threshold,
             )
         else:
             raise FileNotFoundError(f"Model file '{model_file}' not found.")
@@ -77,7 +80,7 @@ class FastTextLanguageClassifier(LanguageClassifier):
         lines: list[str] = [
             LanguageClassifier.preprocess(line) for line in text.split("\n")
         ]
-        line_labels, line_confidences = model.predict(lines, threshold=threshold)
+        line_labels, line_confidences = model.predict(lines, threshold=line_threshold)
         language, confidence = FastTextLanguageClassifier._aggregate_lines(
             line_labels, line_confidences
         )

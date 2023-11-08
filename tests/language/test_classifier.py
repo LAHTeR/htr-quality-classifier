@@ -2,12 +2,27 @@ import tempfile
 from contextlib import nullcontext as does_not_raise
 from pathlib import Path
 import pytest
+from text_quality.language.classifier import LanguageClassifier
 from text_quality.language.fasttext import FastTextLanguageClassifier
 
 
 @pytest.fixture(scope="session")
 def model_file() -> Path:
     return Path(tempfile.gettempdir()) / "lid.176.ftz"
+
+
+class TestLanguageClassifier:
+    @pytest.mark.parametrize(
+        "text,expected",
+        [
+            ("", ""),
+            ("test text", "test text"),
+            ("„test text.", "test text"),
+            ("„test . . . text.", "test       text"),
+        ],
+    )
+    def test_preprocess(self, text: str, expected: str):
+        assert LanguageClassifier.preprocess(text) == expected
 
 
 class TestFastTextLanguageClassifier:
@@ -22,6 +37,7 @@ class TestFastTextLanguageClassifier:
                 "en",
                 pytest.approx(0.6102203526820273),
             ),
+            ("", "None", 0.0),
         ],
     )
     def test_classify(

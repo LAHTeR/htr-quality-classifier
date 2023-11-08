@@ -23,4 +23,4 @@ class LanguageClassifier(abc.ABC):
     def preprocess(text: str) -> str:
         for c in LanguageClassifier.REMOVE_CHARACTERS:
             text = text.replace(c, " ")  # noqa: self-cls-assignment
-        return text
+        return text.strip()
