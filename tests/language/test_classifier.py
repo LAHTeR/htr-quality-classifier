@@ -18,9 +18,9 @@ class TestFastTextLanguageClassifier:
             ("Een Nederlandse tekst", "nl", 1.0),
             ("A multiline\nEnglish text", "en", 1.0),
             (
-                "A multi-lingual English text\nmet een Nederlands regel\nand back to English.",
+                "A multi-lingual English text\nmet een Nederlandse regel\nand back to English.",
                 "en",
-                pytest.approx(0.6102, abs=1e-3),
+                pytest.approx(0.6102203526820273),
             ),
         ],
     )
