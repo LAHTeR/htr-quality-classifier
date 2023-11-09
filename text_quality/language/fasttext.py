@@ -10,7 +10,11 @@ from .classifier import LanguageClassifier
 
 
 class FastTextLanguageClassifier(LanguageClassifier):
-    """LanguageClassifier implementation using FastText."""
+    """LanguageClassifier implementation using FastText.
+
+    See https://fasttext.cc/docs/en/language-identification.html
+    for more information on the FastText language classifier and models.
+    """
 
     MODEL_URLS: dict[str, str] = {
         "lid.176.ftz": "https://dl.fbaipublicfiles.com/fasttext/supervised-models/lid.176.ftz",  # 917kb
