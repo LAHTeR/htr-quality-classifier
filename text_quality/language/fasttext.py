@@ -122,11 +122,21 @@ class FastTextLanguageClassifier(LanguageClassifier):
             ValueError: if the labels and confidences are empty or of different lengths.
         """
 
+        if len(line_labels) != len(line_confidences):
+            raise ValueError(
+                f"Labels and confidences must be of equal length, but were {len(line_labels)}/{len(line_confidences)}."
+            )
+
         total_confidences = Counter()
-        for labels, confidences in zip(line_labels, line_confidences, strict=True):
+        for labels, confidences in zip(line_labels, line_confidences):
             # Iterate over labels and confidences per input line
             # Number of entries per line corresponds to k parameter in model.predict(), defaults to 1
-            for label, confidence in zip(labels, confidences, strict=True):
+            if len(labels) != len(confidences):
+                raise ValueError(
+                    f"Labels and confidences must be of equal length, but were {len(labels)}/{len(confidences)}."
+                )
+
+            for label, confidence in zip(labels, confidences):
                 total_confidences[label] += confidence
 
         try:
