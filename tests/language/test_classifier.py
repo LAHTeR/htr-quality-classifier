@@ -25,6 +25,7 @@ class TestLanguageClassifier:
         assert LanguageClassifier.preprocess(text) == expected
 
 
+@pytest.mark.internet_access
 class TestFastTextLanguageClassifier:
     @pytest.mark.parametrize(
         "text,expected_language,expected_confidence",

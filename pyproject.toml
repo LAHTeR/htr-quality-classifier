@@ -4,6 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "internet_access: mark test that requires internet access",
+]
 
 [tool.coverage.run]
 branch = true
