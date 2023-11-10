@@ -117,7 +117,7 @@ python3 -m pip install -U .
 
 ## Software Architecture
 
-This diagram shows the software architecture of the `text_quality` package.
+This diagram shows the class design of the `text_quality` package.
 
 ![Software architecture](classes_text_quality.svg)
 
