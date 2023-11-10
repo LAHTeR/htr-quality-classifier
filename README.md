@@ -115,6 +115,12 @@ python3 -m pip install -U .
 
 [Readthedocs](https://htr-quality-classifier.readthedocs.io/en/latest/)
 
+## Software Architecture
+
+This diagram shows the class design of the `text_quality` package.
+
+![Software architecture](classes_text_quality.svg)
+
 ## Contributing
 
 If you want to contribute to the development of text_quality,
