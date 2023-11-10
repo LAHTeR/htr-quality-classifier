@@ -37,7 +37,8 @@ class TestFastTextLanguageClassifier:
                 "en",
                 pytest.approx(0.6102203526820273),
             ),
-            ("", "None", 0.0),
+            ("", "", 0.0),
+            ("... . !@#!@# \n . --- ---", "", 0.0),
         ],
     )
     def test_classify(

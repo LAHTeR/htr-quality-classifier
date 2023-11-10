@@ -60,6 +60,7 @@ class FastTextLanguageClassifier(LanguageClassifier):
             text (str): The text to classify.
         Returns:
             A tuple[str, float] with the language code (e.g. "nl") and the confidence.
+                ("", 0.0) if all lines were below the confidence threshold.
         """
 
         lines: list[str] = [
@@ -68,9 +69,14 @@ class FastTextLanguageClassifier(LanguageClassifier):
         line_labels, line_confidences = self._model.predict(
             lines, threshold=self._line_threshold
         )
-        language, confidence = FastTextLanguageClassifier._aggregate_lines(
-            line_labels, line_confidences
-        )
+        if any(labels for labels in line_labels):
+            language, confidence = FastTextLanguageClassifier._aggregate_lines(
+                line_labels, line_confidences
+            )
+        else:
+            # All lines below threshold, no classifications output
+            language = ""
+            confidence = 0.0
 
         return language.removeprefix(self._LABEL_PREFIX), confidence
 
@@ -95,30 +101,39 @@ class FastTextLanguageClassifier(LanguageClassifier):
     ) -> tuple[str, float]:
         """Aggregate the results per line from the classifier.
 
+        The confidence is the weight that the most common label has from the total confidence:
+
+        1. Sum all confidences per line
+        2. The label with the largest total confidence is the winning label
+        3. The confidence is the the summed confidence of the winning label divided by the total confidence of all labels
+
+        Because the confidences per line do not sum up to 1
+        -- only the most likely label(s) is/are returned --
+        this results in a higher score than the average confidence.
+
+        Furthermore, the `classify()` method applies a threshold to the classifier to ignore lines with low confidence.
+
         Args:
             line_labels (list[list[str]]): the labels returned by the classifier; one list of labels for each input line
             line_confidences (list[ArrayLike]): the confidences returned by the classifier; one array for each input line
         Returns:
-            A tuple[str, float] with the language code (e.g. "nl") and the confidence.
-                ("None", 0.0) if no input line could be classified.
+            A tuple[str, float] with the language code (e.g. `__label__nl`) and the confidence.
+        Raises:
+            ValueError: if the labels and confidences are empty or of different lengths.
         """
-        if len(line_labels) != len(line_confidences):
-            raise ValueError(
-                f"Labels and confidences must have the same length, but were {len(line_labels)} and {len(line_confidences)}."
-            )
 
-        if any(labels for labels in line_labels):
-            total_confidences = Counter()
-            for labels, confidences in zip(line_labels, line_confidences):
-                # Iterate over labels and confidences per input line
-                # Number of entries per line corresponds to k parameter in model.predict(), defaults to 1
-                for label, confidence in zip(labels, confidences):
-                    total_confidences[label] += confidence
+        total_confidences = Counter()
+        for labels, confidences in zip(line_labels, line_confidences, strict=True):
+            # Iterate over labels and confidences per input line
+            # Number of entries per line corresponds to k parameter in model.predict(), defaults to 1
+            for label, confidence in zip(labels, confidences, strict=True):
+                total_confidences[label] += confidence
+
+        try:
             label, total_confidence = total_confidences.most_common()[0]
-            confidence = total_confidence / sum(total_confidences.values())
-        else:
-            # Classifier could not determine language for any line in the input
-            label = str(None)
-            confidence = 0.0
+        except IndexError as e:
+            raise ValueError(f"No labels provided in '{str(line_labels)}'.") from e
+
+        confidence = total_confidence / sum(total_confidences.values())
 
         return label, confidence
