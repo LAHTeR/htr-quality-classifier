@@ -153,71 +153,14 @@ This section describes how to make a release in 3 parts:
 3. Make sure the [version has been updated](#versioning).
 4. Run the unit tests with `pytest -v`
 
-### (2/3) PyPI
+### SKIP: (2/3) PyPI Release
 
-In a new terminal, without an activated virtual environment or an env directory:
+Publishing an updated package on PyPI manually is not necessary for this project.
+Instead, the [Build and Publish Workflow](.github/workflows/publish-to-test-pypi.yml) is triggered automatically when a new release is created on GitHub in the [next step](#33-github).
 
-```shell
-# prepare a new directory
-cd $(mktemp -d text_quality.XXXXXX)
+### (3/3) GitHub Release
 
-# fresh git clone ensures the release has the state of origin/main branch
-git clone git@github.com:laHTeR/htr-quality-classifier .
+Make a [release on GitHub](https://github.com/laHTeR/htr-quality-classifier/releases/new).
+Create a new tag in the form `v<X.X.X>`, where `<X.X.X>` is the version number as specified in the [versioning section](#versioning).
 
-# prepare a clean virtual environment and activate it
-python3 -m venv env
-source env/bin/activate
-
-# make sure to have a recent version of pip and setuptools
-python3 -m pip install --upgrade pip setuptools
-
-# install runtime dependencies and publishing dependencies
-python3 -m pip install --no-cache-dir .
-python3 -m pip install --no-cache-dir .[publishing]
-
-# clean up any previously generated artefacts
-rm -rf text_quality.egg-info
-rm -rf dist
-
-# create the source distribution and the wheel
-python3 setup.py sdist bdist_wheel
-
-# upload to test pypi instance (requires credentials)
-twine upload --repository-url https://test.pypi.org/legacy/ dist/*
-```
-
-Visit
-[https://test.pypi.org/project/text_quality](https://test.pypi.org/project/text_quality)
-and verify that your package was uploaded successfully. Keep the terminal open, we'll need it later.
-
-In a new terminal, without an activated virtual environment or an env directory:
-
-```shell
-cd $(mktemp -d text_quality-test.XXXXXX)
-
-# prepare a clean virtual environment and activate it
-python3 -m venv env
-source env/bin/activate
-
-# make sure to have a recent version of pip and setuptools
-pip install --upgrade pip setuptools
-
-# install from test pypi instance:
-python3 -m pip -v install --no-cache-dir \
---index-url https://test.pypi.org/simple/ \
---extra-index-url https://pypi.org/simple text_quality
-```
-
-Check that the package works as it should when installed from pypitest.
-
-Then upload to pypi.org with:
-
-```shell
-# Back to the first terminal,
-# FINAL STEP: upload to PyPI (requires credentials)
-twine upload dist/*
-```
-
-### (3/3) GitHub
-
-Don't forget to also make a [release on GitHub](https://github.com/laHTeR/htr-quality-classifier/releases/new). If your repository uses the GitHub-Zenodo integration this will also trigger Zenodo into making a snapshot of your repository and sticking a DOI on it.
+This will also trigger Zenodo into making a snapshot of your repository and sticking a DOI on it (see [Zenodo project page](https://zenodo.org/doi/10.5281/zenodo.8189892)).
