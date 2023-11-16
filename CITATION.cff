@@ -8,7 +8,7 @@ authors:
     orcid: "https://orcid.org/0000-0001-9139-1577"
 date-released: 2023-07-27
 doi: https://doi.org/10.5281/zenodo.8190017
-version: "0.2.2"
+version: "0.3.0"
 repository-code: "git@github.com:laHTeR/htr-quality-classifier"
 keywords:
   - htr
